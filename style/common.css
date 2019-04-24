@@ -1,0 +1,127 @@
+a {
+  @apply no-underline text-black;
+}
+
+input[type=text],
+input[type=email],
+input[type=url],
+input[type=password] {
+  @apply shadow appearance-none border rounded w-full text-grey-darker px-3 py-2 leading-tight;
+}
+
+input:focus {
+  @apply outline-none;
+}
+
+button {
+  @apply bg-red text-white font-bold py-2 px-4 rounded ml-2;
+
+  &:hover {
+    @apply bg-red-dark;
+  }
+
+  &:focus {
+    @apply outline-none shadow-outline;
+  }
+}
+
+.alert {
+  @apply fixed w-2/3 bg-red-lightest border border-red-light text-red-dark px-4 py-3 rounded;
+
+  margin: 60px 16.66666666667%;
+
+  strong {
+    @apply font-bold;
+  }
+}
+
+.content {
+  @apply w-full flex items-center justify-center flex-grow;
+}
+
+.section {
+  @apply w-3/5 flex justify-center items-start p-4;
+
+  min-height: calc(100vh - 5rem);
+  height: calc(100vh - 5rem);
+
+  section {
+    @apply h-full;
+  }
+}
+
+.tabs {
+  @apply w-64 border-r border-grey-light h-full;
+
+  ul {
+    @apply list-reset flex flex-col cursor-pointer;
+
+    li {
+      @apply text-right border border-r-0 border-transparent;
+
+      a {
+        @apply p-4 w-full block;
+      }
+    }
+  }
+}
+
+.pagination {
+  @apply flex justify-center;
+
+  a {
+    @apply text-black bg-white px-4 py-2 inline-block no-underline border select-none;
+
+    transition: background-color .3s;
+  }
+
+  a.active {
+    @apply bg-red border-red text-white;
+  }
+
+  a:hover:not(.active):not(.disabled) {
+    @apply bg-grey-light;
+  }
+
+  a.disabled {
+    @apply bg-grey-light;
+  }
+}
+
+.modal-form {
+  @apply w-full max-w-md flex rounded overflow-hidden shadow-md;
+
+  #image {
+    @apply bg-cover bg-no-repeat w-full px-8 pt-6 pb-8;
+
+    background-position: 50% 50%;
+  }
+
+  form {
+    @apply bg-white shadow-md w-full px-8 pt-6 pb-8;
+
+    div {
+      @apply mb-4;
+
+      label {
+        @apply block text-grey-darker text-sm font-bold mb-2
+      }
+    }
+
+    div:nth-last-child(2) {
+      @apply mb-6;
+    }
+
+    div:last-child {
+      @apply flex items-center justify-between;
+
+      a {
+        @apply inline-block align-baseline font-bold text-sm text-blue;
+
+        &:hover {
+          @apply text-blue-darker;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+
+div.table {
+  @apply flex flex-col h-full w-full text-left border-collapse border border-grey-light border-l-0;
+
+  .row {
+    @apply flex w-full;
+
+    div {
+      @apply py-4 px-6 border-b border-grey-light;
+    }
+  }
+
+  .header {
+    @apply sticky;
+
+    .row div {
+      @apply bg-red font-sans font-medium text-sm text-white
+    }
+  }
+
+  .body {
+    @apply block h-full w-full overflow-auto;
+
+    .row {
+      &:hover {
+        @apply bg-red-lightest;
+      }
+    }
+  }
+}

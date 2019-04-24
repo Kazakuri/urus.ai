@@ -1,0 +1,54 @@
+
+nav > * {
+  @apply py-2;
+}
+
+.nav-button {
+  @apply inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white mt-4;
+}
+
+.nav-button:hover {
+  @apply border-transparent text-red bg-white;
+}
+
+.avatar {
+  @apply relative px-4 py-2 -my-2;
+  a {
+    @apply flex items-center text-white;
+
+    img {
+      @apply rounded-full h-8 w-8 flex items-center justify-center;
+    }
+
+    span {
+      @apply text-white ml-2;
+    }
+  }
+
+  ul {
+    @apply absolute mt-2 -ml-4 w-full invisible opacity-0 hidden list-reset bg-red text-white;
+    transition: all 0.5s ease;
+  }
+
+  li {
+    @apply px-4 py-2 text-white;
+
+    &:focus-within,
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  &:hover > ul,
+  &:focus-within > ul,
+  & > ul:hover,
+  & > ul:focus {
+    @apply visible opacity-100 block;
+  }
+}
+
+@screen lg {
+  .nav-button {
+    @apply mt-0;
+  }
+}

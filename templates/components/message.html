@@ -1,0 +1,8 @@
+{% match message %}
+  {% when Some with (val) %}
+  <div class="alert" role="alert">
+    <strong>Error:</strong>
+    <span class="block sm:inline">{{ val.message }}</span>
+  </div>
+  {% when None %}
+{% endmatch %}

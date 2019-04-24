@@ -1,0 +1,19 @@
+User-agent: *
+
+# Explicitly list out our non-api routes
+Allow: /$
+Allow: /login
+Allow: /register
+
+# These routes require an active login, ignore
+# Allow: /profile
+
+# Static files help robots render the pages
+Allow: /res
+Allow: /favicon.ico
+Allow: /sitemap.xml
+
+# We generate dynamic shortened URLs, don't crawl those
+Disallow: /
+
+Sitemap: /sitemap.xml

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html class="bg-white antialiased h-full" lang="en">
+  <head>
+    <title>{% block title %}{% endblock %} - urus.ai</title>
+    <link rel="stylesheet" href="/res/style.min.css">
+
+    <meta charset="UTF-8">
+
+    {% block head %}{% endblock %}
+  </head>
+  <body class="font-source-sans font-normal text-black leading-normal h-full">
+    <div id="content" class="bg-grey-lighter h-full flex flex-col">
+      <div id="mascot"></div>
+      {% include "components/nav.html" %}
+      {% include "components/message.html" %}
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>

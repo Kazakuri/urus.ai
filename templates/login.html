@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block head %}
+  <style>
+    #image {
+      background-image: url(https://via.placeholder.com/468x468);
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="content">
+    <div class="modal-form">
+      <div id="image"></div>
+      <form class action="/login" method="POST">
+        <div>
+          <label for="display_name">
+            Username
+          </label>
+          <input name="display_name" type="text" placeholder="Username">
+        </div>
+        <div>
+          <label for="password">
+            Password
+          </label>
+          <input name="password" type="password" placeholder="********">
+        </div>
+        <div>
+          <button type="submit">
+            Sign In
+          </button>
+          <a href="#">
+            Forgot Password?
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

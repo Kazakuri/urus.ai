@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Index{% endblock %}
+
+{% block head %}
+<style>
+#expand {
+  display: none;
+}
+
+#expand ~ div > label {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  padding: 1rem;
+  background: #f1f5f8;
+  z-index: 2;
+}
+
+#expand ~ div > label > svg {
+  width: 3rem;
+  height: 3rem;
+  fill: #b8c2cc;
+  transition: 0.2s linear;
+}
+
+#expand:checked ~ div > label > svg {
+  transform: rotate(-180deg);
+}
+
+#expand ~ div.content {
+  margin-top: -100%;
+  position: relative;
+  transition: 0.2s linear;
+}
+
+#expand:checked ~ div.content {
+  margin-top: 0;
+}
+
+.expandable {
+  overflow: hidden;
+  min-height: 72px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="mx-auto py-4 w-full max-w-lg text-center mt-12">
+      <h1>urusai</h1>
+      <p>Some tsundere bullshit</p>
+      <hr class="my-8 border" />
+      <form class="px-4" action="/" method="POST">
+          <div class="flex justify-center">
+            <input name="url" type="url" placeholder="Paste your URL here..." required focus>
+            <button type="submit">
+              Submit
+            </button>
+          </div>
+          <div class="expandable">
+            <input type="checkbox" name="expand" id="expand">
+            <div class="flex">
+              <label for="expand">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path class="secondary" fill-rule="evenodd" d="M15.3 10.3a1 1 0 0 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 1.4-1.4l3.3 3.29 3.3-3.3z"/>
+                </svg>
+              </label>
+            </div>
+            <div class="content">
+              <input name="slug" type="text" placeholder="Custom URL (optional)">
+            </div>
+          </div>
+      </form>
+      {% match url %}
+        {% when Some with (val) %}
+          <hr class="my-8 border" />
+          <div class="bg-red-lightest border-t-4 border-red rounded-b text-red-darkest px-4 py-3 shadow-md" role="alert">
+            <div class="flex">
+              <div class="py-1">
+                <svg class="fill-current h-6 w-6 text-red mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
+                </svg>
+              </div>
+              <div class="text-left">
+                <p class="font-bold">Link Created</p>
+                <p class="text-sm">Your shortened URL has been created: {{val}}</p>
+              </div>
+            </div>
+          </div>
+        {% when None %}
+      {% endmatch %}
+  </div>
+{% endblock %}

@@ -1,0 +1,4 @@
+/target
+**/*.rs.bk
+/public/style.min.css
+/node_modules
