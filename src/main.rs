@@ -85,7 +85,10 @@ fn main() {
   std::env::set_var("RUST_LOG", "urusai,actix_web=info");
   env_logger::init();
 
+  // TODO: This fails if I don't create both of these, why?
+  // I don't even call new_sys.run() anywhere.
   let sys = actix::System::new("urusai");
+  let new_sys = actix_rt::System::new("urusai");
 
   // Ensure that the environment variables we use are all set
   // These should all be set from .env, but
@@ -96,6 +99,8 @@ fn main() {
   env::var("MAILER_MAIL_SERVER").expect("MAILER_MAIL_SERVER must be set");
   env::var("MAILER_USERNAME").expect("MAILER_USERNAME must be set");
   env::var("MAILER_PASSWORD").expect("MAILER_PASSWORD must be set");
+  env::var("FAKTORY_PROVIDER").expect("FAKTORY_PROVIDER must be set");
+  env::var("FAKTORY_URL").expect("FAKTORY_URL must be set");
 
   let secret = env::var("SECRET").expect("SECRET must be set");
   let _domain = env::var("DOMAIN").expect("DOMAIN must be set");
