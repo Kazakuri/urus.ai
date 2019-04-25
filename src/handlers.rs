@@ -58,7 +58,7 @@ pub fn handlers(app: &mut ServiceConfig) {
 /// When building in debug mode, adds handlers for static files.
 fn debug(app: &mut ServiceConfig) -> &mut ServiceConfig {
   app
-    .service(Files::new("./public", "/res"))
+    .service(Files::new("/res", "./public"))
     .service(
       web::resource("/favicon.ico")
         .route(web::get().to(|| file("public/favicon.ico")))
