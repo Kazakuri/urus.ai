@@ -1,34 +1,31 @@
 use futures::future::Future;
-use actix_web::{ http, HttpRequest, HttpResponse, AsyncResponder, HttpMessage };
-use actix_web::middleware::identity::RequestIdentity;
+use actix_web::{ http, HttpRequest, HttpResponse };
+use actix_web::web::{ Data, Form };
+use actix_web::middleware::identity::Identity;
 use askama::Template;
 
 use urusai_lib::models::message::{ Message, MessageType };
 use crate::db::messages::session::CreateSession;
-use crate::State;
 use crate::errors::UserError;
 use crate::templates::Login;
+use crate::State;
 
 /// Attempts to log the user into the requested account.
 ///
 /// Redirects back to the homepage on success, or renders the login page with an error if it fails.
-pub fn create(req: &HttpRequest<State>) -> Box<Future<Item=HttpResponse, Error=UserError>> {
-  let db = req.state().db.clone();
+pub fn create(id: Identity, form: Form<CreateSession>, req: HttpRequest) -> Box<Future<Item=HttpResponse, Error=UserError>> {
+  let state: Data<State> = req.app_data::<State>()
+    .expect("Unabled to fetch application state");
+  let db = state.db.clone();
 
-  let session = req.clone();
-
-  req.urlencoded::<CreateSession>()
+  Box::new(db.send(form.into_inner())
+    .timeout(std::time::Duration::new(5, 0))
     .from_err()
-    .and_then(move |data: CreateSession| {
-      db.send(data)
-        .timeout(std::time::Duration::new(5, 0))
-        .from_err()
-    })
     .and_then(move |res| {
       match res {
         Ok(user) => {
           let token = user.id.to_string();
-          session.remember(token);
+          id.remember(token);
 
           Ok(HttpResponse::SeeOther()
             .header(http::header::LOCATION, "/")
@@ -44,8 +41,7 @@ pub fn create(req: &HttpRequest<State>) -> Box<Future<Item=HttpResponse, Error=U
           }.render().expect("Unable to render login page")))
         }
       }
-    })
-    .responder()
+    }))
 }
 
 #[cfg(test)]

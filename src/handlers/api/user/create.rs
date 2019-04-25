@@ -1,5 +1,6 @@
 use futures::future::Future;
-use actix_web::{ http, HttpRequest, HttpResponse, AsyncResponder, HttpMessage };
+use actix_web::{ http, HttpRequest, HttpResponse };
+use actix_web::web::{ Data, Form };
 use askama::Template;
 
 use urusai_lib::models::message::{ Message, MessageType };
@@ -15,20 +16,18 @@ use crate::JobQueue;
 /// Tries to create a new account for the requested user.
 ///
 /// Renders the register page with an error message if it fails.
-pub fn create(req: &HttpRequest<State>) -> Box<Future<Item=HttpResponse, Error=UserError>> {
-  let db = req.state().db.clone();
+pub fn create(form: Form<CreateUser>, req: HttpRequest) -> Box<Future<Item=HttpResponse, Error=UserError>> {
+  let state: Data<State> = req.app_data::<State>()
+    .expect("Unabled to fetch application state");
+  let db = state.db.clone();
 
   #[cfg(not(test))]
   #[cfg(feature = "mq")]
-  let jobs = JobQueue::clone(&req.state().jobs);
+  let jobs = JobQueue::clone(&state.jobs);
 
-  req.urlencoded::<CreateUser>()
+  Box::new(db.send(form.into_inner())
+    .timeout(std::time::Duration::new(5, 0))
     .from_err()
-    .and_then(move |data: CreateUser| {
-      db.send(data)
-        .timeout(std::time::Duration::new(5, 0))
-        .from_err()
-    })
     .and_then(move |res| {
       match res {
         Ok(_user) => {
@@ -51,8 +50,7 @@ pub fn create(req: &HttpRequest<State>) -> Box<Future<Item=HttpResponse, Error=U
           }.render().expect("Unable to render register page")))
         }
       }
-    })
-    .responder()
+    }))
 }
 
 #[cfg(not(test))]

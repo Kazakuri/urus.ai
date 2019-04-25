@@ -1,11 +1,9 @@
 use actix_web::{ http, HttpRequest, HttpResponse };
-use actix_web::middleware::identity::RequestIdentity;
-
-use crate::State;
+use actix_web::middleware::identity::Identity;
 
 /// Forgets the current session for the user and redirects back to the homepage.
-pub fn delete(req: &HttpRequest<State>) -> HttpResponse {
-  req.forget();
+pub fn delete(id: Identity, req: HttpRequest) -> HttpResponse {
+  id.forget();
   HttpResponse::SeeOther()
     .header(http::header::LOCATION, "/")
     .finish()

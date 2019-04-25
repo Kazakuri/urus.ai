@@ -17,7 +17,9 @@ extern crate log;
 extern crate failure;
 
 use actix::prelude::*;
-use actix_web::{ server, App };
+use actix_web::{ HttpServer, App };
+use actix_web::middleware::{ Logger, Compress };
+use actix_web::middleware::identity::{CookieIdentityPolicy, IdentityService};
 
 #[cfg(not(test))]
 #[cfg(feature = "mq")]
@@ -50,15 +52,11 @@ pub mod errors;
 /// Askama templates for compiled, paramterized application views.
 pub mod templates;
 
-/// Actix middleware to be run before every request is handled.
-pub mod middleware;
-
 /// Utility functions that get called often within other modules.
 pub mod utils;
 
 use crate::db::DbExecutor;
 
-use crate::middleware::init_middleware;
 
 /// An address to a `DbExecutor` actor.
 pub type Database = Addr<DbExecutor>;
@@ -99,6 +97,9 @@ fn main() {
   env::var("MAILER_USERNAME").expect("MAILER_USERNAME must be set");
   env::var("MAILER_PASSWORD").expect("MAILER_PASSWORD must be set");
 
+  let secret = env::var("SECRET").expect("SECRET must be set");
+  let _domain = env::var("DOMAIN").expect("DOMAIN must be set");
+
   let addr = SyncArbiter::start(3, move || {
     DbExecutor(db::database().expect("Failed to connect to database"))
   });
@@ -111,16 +112,25 @@ fn main() {
     )
   );
 
-  server::new(move || {
-    App::with_state(State {
-      db: addr.clone(),
-      #[cfg(not(test))]
-      #[cfg(feature = "mq")]
-      jobs: JobQueue::clone(&producer),
-    })
-      .configure(init_middleware)
+  HttpServer::new(move || {
+    App::new()
+      .data(State {
+        db: addr.clone(),
+        #[cfg(not(test))]
+        #[cfg(feature = "mq")]
+        jobs: JobQueue::clone(&producer),
+      })
+      .wrap(Logger::new("\"%r\" %s %b %Dms"))
+      .wrap(Compress::default())
+      .wrap(IdentityService::new(
+        CookieIdentityPolicy::new(secret.as_bytes())
+          .name("auth-cookie")
+          .path("/")
+          //.domain(domain)
+          .max_age(60 * 60 * 24)
+          .secure(false))
+      )
       .configure(handlers::handlers)
-      .boxed()
   })
     .bind("127.0.0.1:3000")
     .expect("Unable to bind to port")

@@ -1,6 +1,7 @@
 use futures::future::*;
-use actix_web::{ HttpRequest, HttpResponse, AsyncResponder };
-use actix_web::middleware::identity::RequestIdentity;
+use actix_web::{ HttpRequest, HttpResponse, };
+use actix_web::web::Data;
+use actix_web::middleware::identity::Identity;
 use askama::Template;
 use uuid::Uuid;
 
@@ -10,14 +11,17 @@ use crate::errors::UserError;
 use crate::templates::ProfileAccount;
 
 /// Creates an instance of the user's profile page, redirecting to home instead if the user is not logged in.
-pub fn account(req: &HttpRequest<State>) -> Box<Future<Item=HttpResponse, Error=UserError>> {
-  if let Some(id) = req.identity() {
-    let db = req.state().db.clone();
+pub fn account(id: Identity, req: HttpRequest) -> Box<Future<Item=HttpResponse, Error=UserError>> {
+  let state: Data<State> = req.app_data::<State>()
+    .expect("Unabled to fetch application state");
+
+  if let Some(id) = id.identity() {
+    let db = state.db.clone();
     let user_info = ReadUser {
       id: Uuid::parse_str(&id).expect("Unable to parse UUID")
     };
 
-    return db.send(user_info)
+    return Box::new(db.send(user_info)
       .timeout(std::time::Duration::new(5, 0))
       .from_err()
       .and_then(move |res| {
@@ -35,13 +39,12 @@ pub fn account(req: &HttpRequest<State>) -> Box<Future<Item=HttpResponse, Error=
             )
           }
         }
-      })
-      .responder()
+      }))
   }
 
-  ok::<HttpResponse, UserError>(HttpResponse::SeeOther()
+  Box::new(ok::<HttpResponse, UserError>(HttpResponse::SeeOther()
     .header("Location", "/")
-    .finish()).responder()
+    .finish()))
 }
 
 // TODO: Test

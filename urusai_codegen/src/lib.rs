@@ -19,7 +19,7 @@ pub fn db_message_derive(input: TokenStream) -> TokenStream {
   let func = Ident::new(&name.to_string().to_snake_case(), Span::call_site());
 
   let gen = quote! {
-    impl std::convert::From<#name> for actix_web::Binary {
+    impl std::convert::From<#name> for actix_web::web::Bytes {
       fn from(me: #name) -> Self {
         serde_urlencoded::to_string(&me).unwrap().into()
       }

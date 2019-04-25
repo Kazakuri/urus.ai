@@ -1,6 +1,7 @@
 use futures::future::Future;
-use actix_web::{ HttpRequest, HttpResponse, AsyncResponder, HttpMessage };
-use actix_web::middleware::identity::RequestIdentity;
+use actix_web::{ HttpRequest, HttpResponse };
+use actix_web::web::{ Data, Form };
+use actix_web::middleware::identity::Identity;
 use std::env;
 use askama::Template;
 
@@ -11,26 +12,23 @@ use crate::templates::Index;
 use urusai_lib::models::message::{ Message, MessageType };
 
 /// Tries to create a ShortURL for the provided url.
-pub fn create(req: &HttpRequest<State>) -> Box<Future<Item=HttpResponse, Error=UserError>> {
-  let db = req.state().db.clone();
+pub fn create(id: Identity, mut form: Form<CreateURL>, req: HttpRequest) -> Box<Future<Item=HttpResponse, Error=UserError>> {
+  let state: Data<State> = req.app_data::<State>()
+    .expect("Unabled to fetch application state");
+  let db = state.db.clone();
 
-  let session = req.clone();
-  let user = crate::utils::load_user(req.identity(), &db);
+  let user = crate::utils::load_user(id.identity(), &db);
 
   let domain = env::var("DOMAIN")
     .expect("DOMAIN must be set");
+    
+  if let Some(id) = id.identity() {
+    form.user_id = Some(id);
+  }
 
-  req.urlencoded::<CreateURL>()
+  Box::new(db.send(form.into_inner())
+    .timeout(std::time::Duration::new(5, 0))
     .from_err()
-    .and_then(move |mut data: CreateURL| {
-      if let Some(id) = session.identity() {
-        data.user_id = Some(id);
-      }
-
-      db.send(data)
-        .timeout(std::time::Duration::new(5, 0))
-        .from_err()
-    })
     .and_then(move |res| {
       match res {
         Ok(url) => {
@@ -51,8 +49,7 @@ pub fn create(req: &HttpRequest<State>) -> Box<Future<Item=HttpResponse, Error=U
             }.render().expect("Unable to render index page")))
         }
       }
-    })
-    .responder()
+    }))
 }
 
 #[cfg(test)]
