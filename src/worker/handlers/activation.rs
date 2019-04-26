@@ -1,11 +1,8 @@
 use faktory::Job;
 use std::io::{ Result, Error, ErrorKind };
-use lettre_email::EmailBuilder;
+use lettre::{SmtpClient, Transport};
+use lettre_email::Email;
 use askama::Template;
-use native_tls::{ TlsConnector, Protocol };
-use lettre::smtp::authentication::{ Credentials, Mechanism };
-use lettre::{ EmailTransport, ClientTlsParameters, ClientSecurity };
-use lettre::smtp::{ SmtpTransportBuilder, ConnectionReuseParameters };
 use std::env;
 
 use crate::templates::Activation;
@@ -28,7 +25,7 @@ pub fn activation(job: &Job) -> Result<()> {
                   Please visit the link below to verify your account and start using urus.ai immediately.\n \
                   https://urus.ai/verify/{}", &user.id);
 
-      let email = EmailBuilder::new()
+      let email = Email::builder()
         .to(user.email)
         .from(from_address)
         .subject("Welcome to urus.ai!")
@@ -36,25 +33,9 @@ pub fn activation(job: &Job) -> Result<()> {
         .build()
         .unwrap();
 
-      let mut tls_builder = TlsConnector::builder().unwrap();
-      tls_builder.supported_protocols(&[Protocol::Tlsv12]).unwrap();
+      let mut mailer = SmtpClient::new_unencrypted_localhost().unwrap().transport();
 
-      let tls_parameters = ClientTlsParameters::new(
-        mail_server.to_string(),
-        tls_builder.build().unwrap()
-      );
-
-      let mut mailer = SmtpTransportBuilder::new(
-        (&mail_server[..], 465),
-        ClientSecurity::Wrapper(tls_parameters)
-      )
-        .expect("Failed to create transport")
-        .authentication_mechanism(Mechanism::Login)
-        .credentials(Credentials::new(username, password))
-        .connection_reuse(ConnectionReuseParameters::ReuseUnlimited)
-        .build();
-
-      let result = mailer.send(&email);
+      let result = mailer.send(email.into());
 
       if result.is_err() {
         error!("{:?}", result);
