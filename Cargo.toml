@@ -27,7 +27,7 @@ actix-files = "0.1.0-betsa.1"
 actix-rt = "0.2"
 bytes = "0.4.11"
 diesel = { version = "1.4.0", features = [ "postgres", "extras" ] }
-dotenv = "0.9.0"
+dotenv = "0.13.0"
 chrono = { version = "0.4", features = ["serde"] }
 serde = "1.0"
 serde_derive = "1.0"
@@ -39,7 +39,7 @@ sodiumoxide = "0.2.0"
 log = "0.4.6"
 env_logger = "0.6.0"
 failure = "*"
-askama = "0.7"
+askama = "0.8.0"
 nanoid = "0.2.0"
 r2d2 = "0.8.3"
 regex = "1"
@@ -48,9 +48,6 @@ lettre = "0.8"
 lettre_email = "0.8"
 faktory = "0.10.5"
 native-tls = "0.1.5"
-
-[build-dependencies]
-askama = "0.7"
 
 [features]
 default = ["mq"]

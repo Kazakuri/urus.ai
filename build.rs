@@ -1,5 +1,3 @@
-extern crate askama;
-
 use std::process::Command;
 use std::fs::{self, DirEntry};
 use std::io;
@@ -63,6 +61,4 @@ fn main() {
     println!("cargo:rerun-if-changed={}", e.path().to_str().unwrap());
   })
   .unwrap();
-
-  askama::rerun_if_templates_changed();
 }
