@@ -5,6 +5,7 @@ name = "urusai"
 version = "0.1.0"
 authors = [ "Kazakuri <kazakuri@urus.ai>" ]
 edition = "2018"
+default-run = "urusai"
 
 [[bin]]
 name = "urusai"
