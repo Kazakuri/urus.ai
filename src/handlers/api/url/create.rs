@@ -12,7 +12,7 @@ use crate::templates::Index;
 use urusai_lib::models::message::{ Message, MessageType };
 
 /// Tries to create a ShortURL for the provided url.
-pub fn create(id: Identity, mut form: Form<CreateURL>, req: HttpRequest) -> Box<Future<Item=HttpResponse, Error=UserError>> {
+pub fn create(id: Identity, mut form: Form<CreateURL>, req: HttpRequest) -> impl Future<Item=HttpResponse, Error=UserError> {
   let state: Data<State> = req.app_data::<State>()
     .expect("Unabled to fetch application state");
   let db = state.db.clone();
@@ -26,7 +26,7 @@ pub fn create(id: Identity, mut form: Form<CreateURL>, req: HttpRequest) -> Box<
     form.user_id = Some(id);
   }
 
-  Box::new(db.send(form.into_inner())
+  db.send(form.into_inner())
     .timeout(std::time::Duration::new(5, 0))
     .from_err()
     .and_then(move |res| {
@@ -49,7 +49,7 @@ pub fn create(id: Identity, mut form: Form<CreateURL>, req: HttpRequest) -> Box<
             }.render().expect("Unable to render index page")))
         }
       }
-    }))
+    })
 }
 
 #[cfg(test)]

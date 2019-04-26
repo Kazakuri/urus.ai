@@ -13,12 +13,12 @@ use crate::State;
 /// Attempts to log the user into the requested account.
 ///
 /// Redirects back to the homepage on success, or renders the login page with an error if it fails.
-pub fn create(id: Identity, form: Form<CreateSession>, req: HttpRequest) -> Box<Future<Item=HttpResponse, Error=UserError>> {
+pub fn create(id: Identity, form: Form<CreateSession>, req: HttpRequest) -> impl Future<Item=HttpResponse, Error=UserError> {
   let state: Data<State> = req.app_data::<State>()
     .expect("Unabled to fetch application state");
   let db = state.db.clone();
 
-  Box::new(db.send(form.into_inner())
+  db.send(form.into_inner())
     .timeout(std::time::Duration::new(5, 0))
     .from_err()
     .and_then(move |res| {
@@ -41,7 +41,7 @@ pub fn create(id: Identity, form: Form<CreateSession>, req: HttpRequest) -> Box<
           }.render().expect("Unable to render login page")))
         }
       }
-    }))
+    })
 }
 
 #[cfg(test)]

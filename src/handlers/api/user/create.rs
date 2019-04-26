@@ -16,7 +16,7 @@ use crate::JobQueue;
 /// Tries to create a new account for the requested user.
 ///
 /// Renders the register page with an error message if it fails.
-pub fn create(form: Form<CreateUser>, req: HttpRequest) -> Box<Future<Item=HttpResponse, Error=UserError>> {
+pub fn create(form: Form<CreateUser>, req: HttpRequest) -> impl Future<Item=HttpResponse, Error=UserError> {
   let state: Data<State> = req.app_data::<State>()
     .expect("Unabled to fetch application state");
   let db = state.db.clone();
@@ -25,7 +25,7 @@ pub fn create(form: Form<CreateUser>, req: HttpRequest) -> Box<Future<Item=HttpR
   #[cfg(feature = "mq")]
   let jobs = JobQueue::clone(&state.jobs);
 
-  Box::new(db.send(form.into_inner())
+  db.send(form.into_inner())
     .timeout(std::time::Duration::new(5, 0))
     .from_err()
     .and_then(move |res| {
@@ -50,7 +50,7 @@ pub fn create(form: Form<CreateUser>, req: HttpRequest) -> Box<Future<Item=HttpR
           }.render().expect("Unable to render register page")))
         }
       }
-    }))
+    })
 }
 
 #[cfg(not(test))]

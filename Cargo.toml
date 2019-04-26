@@ -21,12 +21,9 @@ path = "src/lib.rs"
 
 [dependencies]
 urusai_codegen = { path = "urusai_codegen" }
-actix = "0.7"
-actix-web = "1.0.0-beta.1"
+actix = "0.8.1"
+actix-web = "1.0.0-beta.2"
 actix-files = "0.1.0-betsa.1"
-actix-session = "0.1.0-beta.1"
-actix-service = "0.1.0-beta.1"
-actix-server-config = "0.1.1"
 actix-rt = "0.2"
 bytes = "0.4.11"
 diesel = { version = "1.4.0", features = [ "postgres", "extras" ] }

@@ -85,10 +85,7 @@ fn main() {
   std::env::set_var("RUST_LOG", "urusai,actix_web=info");
   env_logger::init();
 
-  // TODO: This fails if I don't create both of these, why?
-  // I don't even call new_sys.run() anywhere.
-  let sys = actix::System::new("urusai");
-  let new_sys = actix_rt::System::new("urusai");
+  let sys = actix_rt::System::new("urusai");
 
   // Ensure that the environment variables we use are all set
   // These should all be set from .env, but
