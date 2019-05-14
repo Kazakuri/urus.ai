@@ -1,5 +1,6 @@
 use actix::Message;
 use sodiumoxide::crypto::pwhash::argon2id13;
+use bcrypt;
 
 use crate::db::messages::session::CreateSession;
 use crate::db::implementation::Connection;
@@ -22,6 +23,13 @@ pub fn create(conn: &Connection, msg: &CreateSession) -> <CreateSession as Messa
   match user {
     Ok(user) => {
       let mut bytes = user.password_hash.as_bytes().to_vec();
+
+      if !bytes.starts_with(&b"$argon2id$"[..]) {
+        return match bcrypt::verify(&msg.password, &user.password_hash) {
+          Ok(ok) => return if ok { Ok(user) } else { Err(UserError::LoginError) },
+          Err(_) => Err(UserError::LoginError),
+        };
+      }
 
       // argon2 passwords are padded by null bytes and Postgres can't store null bytes, so we strip them
       // Here we re-pad the loaded password with null bytes to reverse the stripping we did when we generated the hash.
