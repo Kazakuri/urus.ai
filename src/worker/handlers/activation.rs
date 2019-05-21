@@ -1,17 +1,18 @@
 use faktory::Job;
 use std::io::{ Result, Error, ErrorKind };
-use lettre::{SmtpClient, Transport};
+use lettre::{ SmtpClient, Transport, smtp::ClientSecurity };
 use lettre_email::Email;
 use askama::Template;
 use std::env;
 
+use urusai_lib::models::user::User;
 use crate::templates::Activation;
 
 pub fn activation(job: &Job) -> Result<()> {
-  println!("{:?}", job);
-
   if let Some(body) = job.args().first() {
-    if let Ok(user) = serde_json::from_value(body.to_owned()) {
+    let args: String = serde_json::from_value(body.to_owned()).expect("Unable to parse job");
+
+    if let Ok(user) = serde_json::from_str(&args) {
       let html = Activation {
         user: &user,
       }.render().unwrap();
@@ -33,7 +34,7 @@ pub fn activation(job: &Job) -> Result<()> {
         .build()
         .unwrap();
 
-      let mut mailer = SmtpClient::new_unencrypted_localhost().unwrap().transport();
+      let mut mailer = SmtpClient::new("127.0.0.1:1025", ClientSecurity::None).unwrap().transport();
 
       let result = mailer.send(email.into());
 

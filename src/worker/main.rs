@@ -16,6 +16,8 @@ fn main() {
 
   let mut c = c.connect(None).unwrap();
 
+  println!("Connected to faktory!");
+
   if let Err(e) = c.run(&["default"]) {
     println!("Worker failed: {}", e);
   }

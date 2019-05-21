@@ -10,6 +10,7 @@ pub struct User {
   pub email: String,
   pub email_verified: bool,
   #[serde(skip_serializing)]
+  #[serde(default)]
   pub password_hash: String,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
