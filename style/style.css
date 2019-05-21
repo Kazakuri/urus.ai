@@ -1,4 +1,4 @@
-@import "tailwindcss/preflight";
+@import "tailwindcss/base";
 @import "tailwindcss/components";
 
 @import "./common.css";
@@ -8,7 +8,7 @@
 @import "tailwindcss/utilities";
 
 #mascot {
-  @apply fixed pin-t pin-r w-1/5 max-w-xs h-full bg-no-repeat bg-contain bg-right-bottom pointer-events-none;
+  @apply fixed top-0 right-0 w-1/5 max-w-xs h-full bg-no-repeat bg-contain bg-right-bottom pointer-events-none;
 
   background-image: url(https://via.placeholder.com/468x468);
 }

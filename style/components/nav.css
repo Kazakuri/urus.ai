@@ -8,7 +8,7 @@ nav > * {
 }
 
 .nav-button:hover {
-  @apply border-transparent text-red bg-white;
+  @apply border-transparent text-red-500 bg-white;
 }
 
 .avatar {
@@ -26,7 +26,7 @@ nav > * {
   }
 
   ul {
-    @apply absolute mt-2 -ml-4 w-full invisible opacity-0 hidden list-reset bg-red text-white;
+    @apply absolute mt-2 -ml-4 w-full invisible opacity-0 hidden bg-red-500 text-white;
     transition: all 0.5s ease;
   }
 

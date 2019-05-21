@@ -54,7 +54,7 @@ fn main() {
 
   run_npm_command("postcss", &vec!["style/style.css", ">", "public/style.min.css"], "Failed to build minified CSS");
 
-  println!("cargo:rerun-if-changed={}", root.join("tailwind.js").to_str().unwrap());
+  println!("cargo:rerun-if-changed={}", root.join("tailwind.config.js").to_str().unwrap());
   println!("cargo:rerun-if-changed={}", root.join("postcss.config.js").to_str().unwrap());
 
   visit_dirs(&root.join("style"), &|e: &DirEntry| {

@@ -1,12 +1,19 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+
 a {
   @apply no-underline text-black;
+}
+
+h1 {
+  @apply text-2xl;
 }
 
 input[type=text],
 input[type=email],
 input[type=url],
 input[type=password] {
-  @apply shadow appearance-none border rounded w-full text-grey-darker px-3 py-2 leading-tight;
+  @apply shadow appearance-none border rounded w-full text-gray-600 px-3 py-2 leading-tight;
 }
 
 input:focus {
@@ -14,10 +21,10 @@ input:focus {
 }
 
 button {
-  @apply bg-red text-white font-bold py-2 px-4 rounded ml-2;
+  @apply bg-red-600 text-white font-bold py-2 px-4 rounded ml-2;
 
   &:hover {
-    @apply bg-red-dark;
+    @apply bg-red-700;
   }
 
   &:focus {
@@ -26,7 +33,7 @@ button {
 }
 
 .alert {
-  @apply fixed w-2/3 bg-red-lightest border border-red-light text-red-dark px-4 py-3 rounded;
+  @apply fixed w-2/3 bg-red-100 border border-red-400 text-red-600 px-4 py-3 rounded;
 
   margin: 60px 16.66666666667%;
 
@@ -51,10 +58,10 @@ button {
 }
 
 .tabs {
-  @apply w-64 border-r border-grey-light h-full;
+  @apply w-64 border-r border-gray-400 h-full;
 
   ul {
-    @apply list-reset flex flex-col cursor-pointer;
+    @apply flex flex-col cursor-pointer;
 
     li {
       @apply text-right border border-r-0 border-transparent;
@@ -76,20 +83,20 @@ button {
   }
 
   a.active {
-    @apply bg-red border-red text-white;
+    @apply bg-red-600 border-red-500 text-white;
   }
 
   a:hover:not(.active):not(.disabled) {
-    @apply bg-grey-light;
+    @apply bg-gray-400;
   }
 
   a.disabled {
-    @apply bg-grey-light;
+    @apply bg-gray-400;
   }
 }
 
 .modal-form {
-  @apply w-full max-w-md flex rounded overflow-hidden shadow-md;
+  @apply w-full max-w-2xl flex rounded overflow-hidden shadow-md;
 
   #image {
     @apply bg-cover bg-no-repeat w-full px-8 pt-6 pb-8;
@@ -104,7 +111,7 @@ button {
       @apply mb-4;
 
       label {
-        @apply block text-grey-darker text-sm font-bold mb-2
+        @apply block text-gray-700 text-sm font-bold mb-2
       }
     }
 
@@ -116,10 +123,10 @@ button {
       @apply flex items-center justify-between;
 
       a {
-        @apply inline-block align-baseline font-bold text-sm text-blue;
+        @apply inline-block align-baseline font-bold text-sm text-blue-500;
 
         &:hover {
-          @apply text-blue-darker;
+          @apply text-blue-700;
         }
       }
     }

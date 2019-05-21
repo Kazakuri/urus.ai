@@ -1,12 +1,12 @@
 
 div.table {
-  @apply flex flex-col h-full w-full text-left border-collapse border border-grey-light border-l-0;
+  @apply flex flex-col h-full w-full text-left border-collapse border border-gray-400 border-l-0;
 
   .row {
     @apply flex w-full;
 
     div {
-      @apply py-4 px-6 border-b border-grey-light;
+      @apply py-4 px-6 border-b border-gray-400;
     }
   }
 
@@ -14,7 +14,7 @@ div.table {
     @apply sticky;
 
     .row div {
-      @apply bg-red font-sans font-medium text-sm text-white
+      @apply bg-red-600 font-sans font-medium text-sm text-white
     }
   }
 
@@ -23,7 +23,7 @@ div.table {
 
     .row {
       &:hover {
-        @apply bg-red-lightest;
+        @apply bg-red-100;
       }
     }
   }

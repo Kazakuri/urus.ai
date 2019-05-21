@@ -8,7 +8,7 @@ const postcssNested = require('postcss-nested');
 module.exports = {
   plugins: [
     postcssImport(),
-    tailwindcss('./tailwind.js'),
+    tailwindcss(),
     postcssNested(),
     cssnano({
       preset: 'default',
