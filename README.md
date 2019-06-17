@@ -26,7 +26,7 @@ npm install
 diesel migration run
 
 # Run the main urus.ai process
-cargo run
+cargo run --bin urusai
 
 # Run the faktory worker process
 cargo run --bin urusai_worker
