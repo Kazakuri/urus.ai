@@ -21,14 +21,6 @@ nav #hamburger:checked ~ div#menu {
   }
 }
 
-.nav-button {
-  @apply inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white mt-4;
-}
-
-.nav-button:hover {
-  @apply border-transparent text-red-500 bg-white;
-}
-
 .avatar {
   @apply relative px-4 py-2 -my-2;
   a {
@@ -65,8 +57,21 @@ nav #hamburger:checked ~ div#menu {
   }
 }
 
+
+.nav-button {
+  @apply block px-4 py-2 text-white;
+}
+
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 @screen lg {
   .nav-button {
-    @apply mt-0;
+    @apply leading-none text-sm mt-0 border rounded border-white inline-block;
+  }
+
+  .nav-button:hover {
+    @apply border-transparent text-red-500 bg-white;
   }
 }

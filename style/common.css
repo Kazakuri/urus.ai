@@ -96,10 +96,10 @@ button {
 }
 
 .modal-form {
-  @apply w-full max-w-2xl flex rounded overflow-hidden shadow-md;
+  @apply mt-20 w-full max-w-2xl flex rounded overflow-hidden shadow-md;
 
   #image {
-    @apply bg-cover bg-no-repeat w-full px-8 pt-6 pb-8;
+    @apply hidden bg-cover bg-no-repeat w-full px-8 pt-6 pb-8;
 
     background-position: 50% 50%;
   }
@@ -129,6 +129,16 @@ button {
           @apply text-blue-700;
         }
       }
+    }
+  }
+}
+
+@screen lg {
+  .modal-form {
+    @apply mt-0;
+
+    #image {
+      @apply block;
     }
   }
 }
