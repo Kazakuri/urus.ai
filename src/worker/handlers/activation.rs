@@ -22,40 +22,40 @@ pub fn activation(job: &Job) -> Result<()> {
         (Err(_), _) => Err(Error::new(ErrorKind::InvalidInput, "Invalid user object")),
         (_, Err(_)) => Err(Error::new(ErrorKind::InvalidInput, "Invalid user token object")),
         (Ok(user), Ok(token)) => {
-      let html = Activation {
+          let html = Activation {
             token: &token,
-        user: &user,
-      }.render().unwrap();
+            user: &user,
+          }.render().unwrap();
 
-      let from_address = env::var("MAILER_FROM_ADDRESS").unwrap();
-      let mail_server = env::var("MAILER_MAIL_SERVER").unwrap();
-      let username = env::var("MAILER_USERNAME").unwrap();
-      let password = env::var("MAILER_PASSWORD").unwrap();
+          let from_address = env::var("MAILER_FROM_ADDRESS").unwrap();
+          let mail_server = env::var("MAILER_MAIL_SERVER").unwrap();
+          let username = env::var("MAILER_USERNAME").unwrap();
+          let password = env::var("MAILER_PASSWORD").unwrap();
 
-      let text = format!("Welcome to urus.ai!\n\n \
-                  Please visit the link below to verify your account and start using urus.ai immediately.\n \
+          let text = format!("Welcome to urus.ai!\n\n \
+                      Please visit the link below to verify your account and start using urus.ai immediately.\n \
                       https://urus.ai/verify/{}/{}", &token.user_id, &token.id);
 
-      let email = Email::builder()
-        .to(user.email)
-        .from(from_address)
-        .subject("Welcome to urus.ai!")
-        .alternative(html, text)
-        .build()
-        .unwrap();
+          let email = Email::builder()
+            .to(user.email)
+            .from(from_address)
+            .subject("Welcome to urus.ai!")
+            .alternative(html, text)
+            .build()
+            .unwrap();
 
           // TODO: Use our environment variables instead of the hard-coded test server.
-      let mut mailer = SmtpClient::new("127.0.0.1:1025", ClientSecurity::None).unwrap().transport();
+          let mut mailer = SmtpClient::new("127.0.0.1:1025", ClientSecurity::None).unwrap().transport();
 
-      let result = mailer.send(email.into());
+          let result = mailer.send(email.into());
 
-      if result.is_err() {
-        error!("{:?}", result);
-      }
+          if result.is_err() {
+            error!("{:?}", result);
+          }
 
-      mailer.close();
-      Ok(())
-    }
+          mailer.close();
+          Ok(())
+        }
       }
     },
     _ => Err(Error::new(ErrorKind::InvalidInput, "Too many arguments")),

@@ -98,10 +98,10 @@ mod test {
     let mut app = test::init_service(
       App::new()
       .data(State {
-      db: SyncArbiter::start(1, move || {
-        DbExecutor(mock().expect("Failed to get DB instance"))
-      }),
-    })
+        db: SyncArbiter::start(1, move || {
+          DbExecutor(mock().expect("Failed to get DB instance"))
+        }),
+      })
       .service(web::resource("/").to_async(create))
     );
 
@@ -129,10 +129,10 @@ mod test {
     let mut app = test::init_service(
       App::new()
       .data(State {
-      db: SyncArbiter::start(1, move || {
-        DbExecutor(mock().expect("Failed to get DB instance"))
-      }),
-    })
+        db: SyncArbiter::start(1, move || {
+          DbExecutor(mock().expect("Failed to get DB instance"))
+        }),
+      })
       .service(web::resource("/").to_async(create))
     );
 
@@ -171,10 +171,10 @@ mod test {
     let mut app = test::init_service(
       App::new()
       .data(State {
-      db: SyncArbiter::start(1, move || {
-        DbExecutor(mock().expect("Failed to get DB instance"))
-      }),
-    })
+        db: SyncArbiter::start(1, move || {
+          DbExecutor(mock().expect("Failed to get DB instance"))
+        }),
+      })
       .service(web::resource("/").to_async(create))
     );
 
@@ -192,10 +192,10 @@ mod test {
     let mut app = test::init_service(
       App::new()
       .data(State {
-      db: SyncArbiter::start(1, move || {
-        DbExecutor(mock().expect("Failed to get DB instance"))
-      }),
-    })
+        db: SyncArbiter::start(1, move || {
+          DbExecutor(mock().expect("Failed to get DB instance"))
+        }),
+      })
       .service(web::resource("/").to_async(create))
     );
 

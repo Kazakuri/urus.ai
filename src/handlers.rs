@@ -26,7 +26,7 @@ pub fn handlers(app: &mut ServiceConfig) {
     .service(
       web::resource("/logout")
         .route(web::get().to_async(api::session::delete))
-    )    
+    )
     .service(
       web::resource("/register")
         .route(web::get().to_async(app::register))

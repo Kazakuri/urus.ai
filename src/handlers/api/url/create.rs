@@ -21,7 +21,7 @@ pub fn create(id: Identity, mut form: Form<CreateURL>, req: HttpRequest) -> impl
 
   let domain = env::var("DOMAIN")
     .expect("DOMAIN must be set");
-    
+
   if let Some(id) = id.identity() {
     form.user_id = Some(id);
   }
@@ -72,10 +72,10 @@ mod test {
     let mut app = test::init_service(
       App::new()
       .data(State {
-      db: SyncArbiter::start(1, move || {
-        DbExecutor(mock().expect("Failed to get DB instance"))
-      }),
-    })
+        db: SyncArbiter::start(1, move || {
+          DbExecutor(mock().expect("Failed to get DB instance"))
+        }),
+      })
       .service(web::resource("/").to_async(create))
     );
 
@@ -115,10 +115,10 @@ mod test {
     let mut app = test::init_service(
       App::new()
       .data(State {
-      db: SyncArbiter::start(1, move || {
-        DbExecutor(mock().expect("Failed to get DB instance"))
-      }),
-    })
+        db: SyncArbiter::start(1, move || {
+          DbExecutor(mock().expect("Failed to get DB instance"))
+        }),
+      })
       .service(web::resource("/").to_async(create))
     );
 
@@ -158,10 +158,10 @@ mod test {
     let mut app = test::init_service(
       App::new()
       .data(State {
-      db: SyncArbiter::start(1, move || {
-        DbExecutor(mock().expect("Failed to get DB instance"))
-      }),
-    })
+        db: SyncArbiter::start(1, move || {
+          DbExecutor(mock().expect("Failed to get DB instance"))
+        }),
+      })
       .service(web::resource("/").to_async(create))
     );
 
@@ -201,10 +201,10 @@ mod test {
     let mut app = test::init_service(
       App::new()
       .data(State {
-      db: SyncArbiter::start(1, move || {
-        DbExecutor(mock().expect("Failed to get DB instance"))
-      }),
-    })
+        db: SyncArbiter::start(1, move || {
+          DbExecutor(mock().expect("Failed to get DB instance"))
+        }),
+      })
       .service(web::resource("/").to_async(create))
     );
 
@@ -227,10 +227,10 @@ mod test {
     let mut app = test::init_service(
       App::new()
       .data(State {
-      db: SyncArbiter::start(1, move || {
-        DbExecutor(mock().expect("Failed to get DB instance"))
-      }),
-    })
+        db: SyncArbiter::start(1, move || {
+          DbExecutor(mock().expect("Failed to get DB instance"))
+        }),
+      })
       .service(web::resource("/").to_async(create))
     );
 

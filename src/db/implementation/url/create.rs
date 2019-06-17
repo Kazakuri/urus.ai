@@ -129,13 +129,13 @@ mod tests {
   }
 
   fn create_user(conn: &crate::db::implementation::Connection) -> (User, UserToken) {
-      let result = crate::db::implementation::user::create(&conn, CreateUser {
-        display_name: "test_user".to_string(),
-        email: "test@user.com".to_string(),
-        password: "S3curePassw0rd!".to_string(),
-      });
+    let result = crate::db::implementation::user::create(&conn, CreateUser {
+      display_name: "test_user".to_string(),
+      email: "test@user.com".to_string(),
+      password: "S3curePassw0rd!".to_string(),
+    });
 
-      result.expect("Invalid user")
+    result.expect("Invalid user")
   }
 
   #[test]
