@@ -94,8 +94,7 @@ mod test {
                 .service(web::resource("/{slug}").to_async(read)),
         );
 
-        let request = test::TestRequest::with_uri("/example")
-            .to_request();
+        let request = test::TestRequest::with_uri("/example").to_request();
 
         let response = test::call_service(&mut app, request);
 
