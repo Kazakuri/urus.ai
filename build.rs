@@ -1,8 +1,8 @@
-use std::process::Command;
+use std::env;
 use std::fs::{self, DirEntry};
 use std::io;
-use std::env;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 
 fn visit_dirs(dir: &Path, cb: &dyn Fn(&DirEntry)) -> io::Result<()> {
     if dir.is_dir() {
@@ -20,45 +20,46 @@ fn visit_dirs(dir: &Path, cb: &dyn Fn(&DirEntry)) -> io::Result<()> {
 }
 
 fn run_npm_command(cmd: &str, args: &Vec<&str>, error: &str) {
-  let root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+    let root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
 
-  let command = root
-    .join("node_modules")
-    .join(".bin")
-    .join(cmd);
+    let command = root.join("node_modules").join(".bin").join(cmd);
 
-  let output = if cfg!(target_os = "windows") {
-    let mut arguments = vec!["/C", command.to_str().unwrap()];
-    arguments.extend(args);
+    let output = if cfg!(target_os = "windows") {
+        let mut arguments = vec!["/C", command.to_str().unwrap()];
+        arguments.extend(args);
 
-    Command::new("cmd")
-            .args(arguments)
-            .output()
-            .expect(error)
-  } else {
-    let mut arguments = vec!["-c", command.to_str().unwrap()];
-    arguments.extend(args);
+        Command::new("cmd").args(arguments).output().expect(error)
+    } else {
+        let mut arguments = vec!["-c", command.to_str().unwrap()];
+        arguments.extend(args);
 
-    Command::new("sh")
-            .args(arguments)
-            .output()
-            .expect(error)
-  };
+        Command::new("sh").args(arguments).output().expect(error)
+    };
 
-  println!("{}", String::from_utf8(output.stdout).unwrap());
-  println!("{}", String::from_utf8(output.stderr).unwrap());
+    println!("{}", String::from_utf8(output.stdout).unwrap());
+    println!("{}", String::from_utf8(output.stderr).unwrap());
 }
 
 fn main() {
-  let root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+    let root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
 
-  run_npm_command("postcss", &vec!["style/style.css", ">", "public/style.min.css"], "Failed to build minified CSS");
+    run_npm_command(
+        "postcss",
+        &vec!["style/style.css", ">", "public/style.min.css"],
+        "Failed to build minified CSS",
+    );
 
-  println!("cargo:rerun-if-changed={}", root.join("tailwind.config.js").to_str().unwrap());
-  println!("cargo:rerun-if-changed={}", root.join("postcss.config.js").to_str().unwrap());
+    println!(
+        "cargo:rerun-if-changed={}",
+        root.join("tailwind.config.js").to_str().unwrap()
+    );
+    println!(
+        "cargo:rerun-if-changed={}",
+        root.join("postcss.config.js").to_str().unwrap()
+    );
 
-  visit_dirs(&root.join("style"), &|e: &DirEntry| {
-    println!("cargo:rerun-if-changed={}", e.path().to_str().unwrap());
-  })
-  .unwrap();
+    visit_dirs(&root.join("style"), &|e: &DirEntry| {
+        println!("cargo:rerun-if-changed={}", e.path().to_str().unwrap());
+    })
+    .unwrap();
 }
