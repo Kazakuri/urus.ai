@@ -10,9 +10,10 @@
 #mascot {
   @apply bg-no-repeat bg-contain pointer-events-none bg-bottom;
 
-  margin: 0 10vw;
-  width: 80vw;
-  height: 80vw;
+  margin: 0 auto;
+  width: 70vw;
+  max-width: 500px;
+  height: 70vw;
   background-image: url(https://via.placeholder.com/468x468);
 }
 
