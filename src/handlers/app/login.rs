@@ -1,4 +1,4 @@
-use actix_web::middleware::identity::Identity;
+use actix_identity::Identity;
 use actix_web::HttpResponse;
 use askama::Template;
 use futures::future::*;

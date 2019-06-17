@@ -19,7 +19,7 @@ path = "src/lib.rs"
 [dependencies]
 urusai_codegen = { path = "urusai_codegen" }
 actix = "0.8.3"
-actix-web = "1.0.0"
+actix-web = "1.0.2"
 actix-files = "0.1.1"
 actix-rt = "0.2.2"
 bytes = "0.4.11"
@@ -47,6 +47,7 @@ lettre_email = "0.9.0"
 faktory = "0.10.5"
 native-tls = "0.2.2"
 bcrypt = "0.4.0"
+actix-identity = "0.1.0"
 
 [features]
 default = ["mq"]

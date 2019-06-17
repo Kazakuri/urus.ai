@@ -1,4 +1,4 @@
-use actix_web::middleware::identity::Identity;
+use actix_identity::Identity;
 use actix_web::{http, HttpRequest, HttpResponse};
 use askama::Template;
 use futures::future::Future;
@@ -91,11 +91,10 @@ mod test {
                         DbExecutor(mock().expect("Failed to get DB instance"))
                     }),
                 })
-                .service(web::resource("/").to_async(read)),
+                .service(web::resource("/{slug}").to_async(read)),
         );
 
-        let request = test::TestRequest::with_uri("/")
-            .param("slug", "example")
+        let request = test::TestRequest::with_uri("/example")
             .to_request();
 
         let response = test::call_service(&mut app, request);

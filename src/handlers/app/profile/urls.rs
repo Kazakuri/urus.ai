@@ -1,4 +1,4 @@
-use actix_web::middleware::identity::Identity;
+use actix_identity::Identity;
 use actix_web::web::Query;
 use actix_web::{FromRequest, HttpRequest, HttpResponse};
 use askama::Template;

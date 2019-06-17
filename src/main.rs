@@ -19,7 +19,7 @@ extern crate log;
 extern crate failure;
 
 use actix::prelude::*;
-use actix_web::middleware::identity::{CookieIdentityPolicy, IdentityService};
+use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::middleware::{Compress, Logger};
 use actix_web::{App, HttpServer};
 

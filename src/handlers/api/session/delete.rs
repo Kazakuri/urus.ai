@@ -1,4 +1,4 @@
-use actix_web::middleware::identity::Identity;
+use actix_identity::Identity;
 use actix_web::{http, HttpResponse};
 
 /// Forgets the current session for the user and redirects back to the homepage.
