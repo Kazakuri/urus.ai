@@ -1,7 +1,7 @@
 /// Functions to create and persist a ShortURL in the database.
 pub mod create;
 
-/// functions to read a ShortURL from the database.
+/// Functions to read a ShortURL from the database.
 pub mod read;
 
 pub use self::create::create;

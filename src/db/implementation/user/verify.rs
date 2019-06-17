@@ -2,24 +2,29 @@ use actix::Message;
 
 use crate::db::messages::user::VerifyUser;
 use crate::db::implementation::Connection;
-use urusai_lib::models::user::{ User };
+use urusai_lib::models::user_token::{ UserToken, TokenScope };
 use crate::errors::UserError;
 
-/// Verfies a user's email from a `VerifyUser` message
+/// Verifies a user's email from a `VerifyUser` message
 pub fn verify(conn: &Connection, msg: &VerifyUser) -> <VerifyUser as Message>::Result {
+  use urusai_lib::schema::user_tokens::dsl::*;
   use urusai_lib::schema::users::dsl::*;
+  use urusai_lib::schema::user_tokens;
+
   use diesel::RunQueryDsl;
   use diesel::QueryDsl;
   use diesel::ExpressionMethods;
 
-  let user = users
-    .filter(id.eq(&msg.id))
-    .first::<User>(conn);
+  let user = user_tokens
+    .filter(user_tokens::dsl::id.eq(&msg.id))
+    .filter(user_id.eq(&msg.user_id))
+    .filter(scope.eq(TokenScope::Activation))
+    .first::<UserToken>(conn);
 
   match user {
     Ok(user) => {
       // Verify the user's email
-      let user_update = diesel::update(&user)
+      let user_update = diesel::update(users.find(&msg.user_id))
         .set(email_verified.eq(true))
         .execute(conn);
 
@@ -41,6 +46,7 @@ mod tests {
   use dotenv::dotenv;
   use uuid::Uuid;
   use crate::db::messages::user::CreateUser;
+  use urusai_lib::models::user::User;
 
   use super::*;
 
@@ -53,7 +59,7 @@ mod tests {
     db.pool.get().unwrap()
   }
 
-  fn create_user(conn: &crate::db::implementation::Connection) -> User {
+  fn create_user(conn: &crate::db::implementation::Connection) -> (User, UserToken) {
     let result = crate::db::implementation::user::create(&conn, CreateUser {
       display_name: "test_user".to_string(),
       email: "test@user.com".to_string(),
@@ -81,10 +87,11 @@ mod tests {
     let conn = get_connection();
 
     conn.test_transaction::<_, Error, _>(|| {
-      let user = create_user(&conn);
+      let (user, token) = create_user(&conn);
 
       verify(&conn, &VerifyUser {
-        id: user.id,
+        id: token.id,
+        user_id: user.id,
       }).expect("Failed to verify user");
 
       assert!(email_verified(&conn, &user.id));
@@ -93,6 +100,8 @@ mod tests {
     });
   }
 
+  // TODO: fail unknown user / unknown token
+
   #[test]
   fn fail_unknown() {
     let conn = get_connection();
@@ -100,6 +109,7 @@ mod tests {
     conn.test_transaction::<_, Error, _>(|| {
       let result = verify(&conn, &VerifyUser {
         id: Uuid::nil(),
+        user_id: Uuid::nil(),
       });
 
       assert!(result.is_err());

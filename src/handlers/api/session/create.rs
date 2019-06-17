@@ -1,6 +1,6 @@
 use futures::future::Future;
 use actix_web::{ http, HttpRequest, HttpResponse };
-use actix_web::web::{ Data, Form };
+use actix_web::web::Form;
 use actix_web::middleware::identity::Identity;
 use askama::Template;
 
@@ -14,8 +14,8 @@ use crate::State;
 ///
 /// Redirects back to the homepage on success, or renders the login page with an error if it fails.
 pub fn create(id: Identity, form: Form<CreateSession>, req: HttpRequest) -> impl Future<Item=HttpResponse, Error=UserError> {
-  let state: Data<State> = req.app_data::<State>()
-    .expect("Unabled to fetch application state");
+  let state: &State = req.app_data::<State>()
+    .expect("Unable to fetch application state");
   let db = state.db.clone();
 
   db.send(form.into_inner())
@@ -47,8 +47,9 @@ pub fn create(id: Identity, form: Form<CreateSession>, req: HttpRequest) -> impl
 #[cfg(test)]
 mod test {
   use actix::prelude::SyncArbiter;
-  use actix_web::test;
   use actix_web::http::StatusCode;
+  use actix_web::{ web, test, App };
+  use futures::future::{ ok, lazy };
 
   use super::*;
 
@@ -56,48 +57,61 @@ mod test {
 
   #[test]
   fn success() {
-    let _ = actix::System::new("urusai_test");
+    let sys = actix_rt::System::new("urusai_test");
 
-    let response = test::TestRequest::with_state(State {
+    let mut app = test::init_service(
+      App::new()
+      .data(State {
       db: SyncArbiter::start(1, move || {
         DbExecutor(mock().expect("Failed to get DB instance"))
       }),
     })
+      .service(web::resource("/").to_async(create))
+    );
+
+    let request = test::TestRequest::with_uri("/")
       .header("Content-Type", "application/x-www-form-urlencoded")
       .set_payload(CreateSession {
         display_name: "test_account_1".to_string(),
         password: "password".to_string()
       })
-      .execute(&create)
-      .expect("HTTP request failed");
+      .to_request();
+
+    let mut response = test::call_service(&mut app, request);
 
     assert_eq!(response.status(), StatusCode::SEE_OTHER);
   }
 
   #[test]
   fn fail_wrong_password() {
-    let _ = actix::System::new("urusai_test");
+    let sys = actix_rt::System::new("urusai_test");
 
-    let response = test::TestRequest::with_state(State {
+    let mut app = test::init_service(
+      App::new()
+      .data(State {
       db: SyncArbiter::start(1, move || {
         DbExecutor(mock().expect("Failed to get DB instance"))
       }),
     })
+      .service(web::resource("/").to_async(create))
+    );
+
+    let request = test::TestRequest::with_uri("/")
       .header("Content-Type", "application/x-www-form-urlencoded")
       .set_payload(CreateSession {
         display_name: "test_account_1".to_string(),
         password: "wrong_password".to_string()
-      })
-      .execute(&create)
-      .expect("HTTP request failed");
+      }).to_request();
+
+    let mut response = test::call_service(&mut app, request);
 
     assert_eq!(response.status(), StatusCode::OK);
 
-    match response.body() {
-      actix_web::Body::Binary(b) => {
+    match response.take_body() {
+      actix_web::dev::ResponseBody::Body(b) => {
         match b {
-          actix_web::Binary::Bytes(bytes) => {
-            let body = std::str::from_utf8(bytes).expect("Unable to read body");
+          actix_web::dev::Body::Bytes(bytes) => {
+            let body = std::str::from_utf8(&bytes).expect("Unable to read body");
             assert!(body.contains(&UserError::LoginError.to_string()));
           }
           _ => panic!("Unexpected binary!")
@@ -109,49 +123,51 @@ mod test {
 
   #[test]
   fn fail_missing_payload() {
-    let _ = actix::System::new("urusai_test");
+    let sys = actix_rt::System::new("urusai_test");
 
-    let result = test::TestRequest::with_state(State {
+    let mut app = test::init_service(
+      App::new()
+      .data(State {
       db: SyncArbiter::start(1, move || {
         DbExecutor(mock().expect("Failed to get DB instance"))
       }),
     })
+      .service(web::resource("/").to_async(create))
+    );
+
+    let request = test::TestRequest::with_uri("/")
       .header("Content-Type", "application/x-www-form-urlencoded")
-      .execute(&create);
+      .to_request();
 
-    assert!(result.is_err());
+    let mut response = test::call_service(&mut app, request);
 
-    match result.err() {
-      Some(e) => {
-        assert_eq!(e.cause().error_response().status(), StatusCode::BAD_REQUEST);
-      }
-      _ => panic!("This request should not have succeeded")
-    };
+    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
   }
 
   #[test]
   fn fail_wrong_header() {
-    let _ = actix::System::new("urusai_test");
+    let sys = actix_rt::System::new("urusai_test");
 
-    let result = test::TestRequest::with_state(State {
+    let mut app = test::init_service(
+      App::new()
+      .data(State {
       db: SyncArbiter::start(1, move || {
         DbExecutor(mock().expect("Failed to get DB instance"))
       }),
     })
+      .service(web::resource("/").to_async(create))
+    );
+
+    let request = test::TestRequest::with_uri("/")
       .header("Content-Type", "application/json")
       .set_payload(CreateSession {
         display_name: "test_account_1".to_string(),
         password: "wrong_password".to_string()
       })
-      .execute(&create);
+      .to_request();
 
-    assert!(result.is_err());
+    let mut response = test::call_service(&mut app, request);
 
-    match result.err() {
-      Some(e) => {
-        assert_eq!(e.cause().error_response().status(), StatusCode::BAD_REQUEST);
-      }
-      _ => panic!("This request should not have succeeded")
-    };
+    assert_eq!(response.status(), StatusCode::BAD_REQUEST);
   }
 }

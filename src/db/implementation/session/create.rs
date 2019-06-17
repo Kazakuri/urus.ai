@@ -59,6 +59,7 @@ mod tests {
   use std::env;
   use dotenv::dotenv;
   use crate::db::messages::user::{ CreateUser, VerifyUser };
+  use urusai_lib::models::user_token::UserToken;
 
   use super::*;
 
@@ -71,7 +72,7 @@ mod tests {
     db.pool.get().unwrap()
   }
 
-  fn create_user(conn: &crate::db::implementation::Connection) -> User {
+  fn create_user(conn: &crate::db::implementation::Connection) -> (User, UserToken) {
       let result = crate::db::implementation::user::create(&conn, CreateUser {
         display_name: "test_user".to_string(),
         email: "test@user.com".to_string(),
@@ -81,9 +82,10 @@ mod tests {
       result.expect("Invalid user")
   }
 
-  fn verify_user(conn: &crate::db::implementation::Connection, user: &User) {
+  fn verify_user(conn: &crate::db::implementation::Connection, user: &User, token: &UserToken) {
     let result = crate::db::implementation::user::verify(&conn, &VerifyUser {
-      id: user.id,
+      id: token.id,
+      user_id: user.id,
     });
   }
 
@@ -92,8 +94,8 @@ mod tests {
     let conn = get_connection();
 
     conn.test_transaction::<_, Error, _>(|| {
-      let user = create_user(&conn);
-      verify_user(&conn, &user);
+      let (user, token) = create_user(&conn);
+      verify_user(&conn, &user, &token);
 
       let result = create(&conn, &CreateSession {
         display_name: "test_user".to_string(),
@@ -116,7 +118,7 @@ mod tests {
     let conn = get_connection();
 
     conn.test_transaction::<_, Error, _>(|| {
-      let user = create_user(&conn);
+      let (user, _) = create_user(&conn);
 
       let result = create(&conn, &CreateSession {
         display_name: "test_user".to_string(),
@@ -134,8 +136,8 @@ mod tests {
     let conn = get_connection();
 
     conn.test_transaction::<_, Error, _>(|| {
-      let user = create_user(&conn);
-      verify_user(&conn, &user);
+      let (user, token) = create_user(&conn);
+      verify_user(&conn, &user, &token);
 
       let result = create(&conn, &CreateSession {
         display_name: "test_user".to_string(),
@@ -153,8 +155,8 @@ mod tests {
     let conn = get_connection();
 
     conn.test_transaction::<_, Error, _>(|| {
-      let user = create_user(&conn);
-      verify_user(&conn, &user);
+      let (user, token) = create_user(&conn);
+      verify_user(&conn, &user, &token);
 
       let result = create(&conn, &CreateSession {
         display_name: "test".to_string(),
@@ -172,8 +174,8 @@ mod tests {
     let conn = get_connection();
 
     conn.test_transaction::<_, Error, _>(|| {
-      let user = create_user(&conn);
-      verify_user(&conn, &user);
+      let (user, token) = create_user(&conn);
+      verify_user(&conn, &user, &token);
 
       let result = create(&conn, &CreateSession {
         display_name: "test_user".to_string(),

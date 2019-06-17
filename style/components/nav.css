@@ -3,6 +3,24 @@ nav > * {
   @apply py-2;
 }
 
+nav #hamburger {
+  display: none;
+}
+
+nav #hamburger ~ div#hamburger-menu label {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+nav #hamburger:checked ~ div#menu {
+  @apply block;
+
+  ul.dropdown {
+    @apply visible opacity-100 block relative bg-transparent;
+  }
+}
+
 .nav-button {
   @apply inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white mt-4;
 }

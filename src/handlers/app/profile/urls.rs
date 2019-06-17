@@ -1,6 +1,6 @@
 use futures::future::*;
 use actix_web::{ HttpRequest, HttpResponse, FromRequest };
-use actix_web::web::{ Data, Query };
+use actix_web::web::Query;
 use actix_web::middleware::identity::Identity;
 use askama::Template;
 use uuid::Uuid;
@@ -13,8 +13,8 @@ use crate::templates::ProfileURLs;
 
 /// Creates an instance of the user's profile page, redirecting to home instead if the user is not logged in.
 pub fn urls(id: Identity, req: HttpRequest) -> Box<Future<Item=HttpResponse, Error=UserError>> {
-  let state: Data<State> = req.app_data::<State>()
-    .expect("Unabled to fetch application state");
+  let state: &State = req.app_data::<State>()
+    .expect("Unable to fetch application state");
   if let Some(id) = id.identity() {
     let db = state.db.clone();
     let query = Query::<HashMap<String, String>>::extract(&req);
@@ -22,7 +22,7 @@ pub fn urls(id: Identity, req: HttpRequest) -> Box<Future<Item=HttpResponse, Err
     let page = if let Ok(q) = query {
       match q.get("page").unwrap_or(&"1".to_string()).parse::<i64>() {
         Ok(p) => p,
-        _ => 1
+        Err(_) => 1
       }
     } else {
       1

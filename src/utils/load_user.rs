@@ -51,7 +51,7 @@ mod test {
 
   #[test]
   fn success_no_user() {
-    let _ = actix::System::new("urusai_test");
+    let sys = actix_rt::System::new("urusai_test");
 
     let db = SyncArbiter::start(1, move || {
       DbExecutor(mock().expect("Failed to get DB instance"))
@@ -64,7 +64,7 @@ mod test {
 
   #[test]
   fn success_with_user() {
-    let _ = actix::System::new("urusai_test");
+    let sys = actix_rt::System::new("urusai_test");
 
     let db = SyncArbiter::start(1, move || {
       DbExecutor(mock().expect("Failed to get DB instance"))

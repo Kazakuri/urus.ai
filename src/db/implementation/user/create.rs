@@ -7,6 +7,7 @@ use lazy_static::lazy_static;
 use crate::db::messages::user::CreateUser;
 use crate::db::implementation::Connection;
 use urusai_lib::models::user::{ User, NewUser };
+use urusai_lib::models::user_token::{ NewUserToken, UserToken, TokenScope };
 use crate::errors::UserError;
 
 lazy_static! {
@@ -23,6 +24,10 @@ lazy_static! {
 /// When a user is created, an e-mail will be sent to the email address defined in msg.email
 pub fn create(conn: &Connection, msg: CreateUser) -> <CreateUser as Message>::Result {
   use urusai_lib::schema::users::dsl::*;
+  use urusai_lib::schema::users;
+  use urusai_lib::schema::user_tokens::dsl::*;
+  use urusai_lib::schema::user_tokens;
+
   use diesel::RunQueryDsl;
   use diesel::QueryDsl;
   use diesel::ExpressionMethods;
@@ -75,12 +80,33 @@ pub fn create(conn: &Connection, msg: CreateUser) -> <CreateUser as Message>::Re
       _ => Err(UserError::InternalError),
     },
     Ok(_) => {
+      let token = Uuid::new_v4();
+
+      let user_token = NewUserToken {
+        id: &token,
+        user_id: &uuid,
+        scope: &TokenScope::Activation,
+      };
+
+      let result = diesel::insert_into(user_tokens)
+        .values(&user_token)
+        .execute(conn);
+
+      if result.is_err() {
+        return Err(UserError::InternalError);
+      }
+
       let item = users
-        .filter(id.eq(&uuid))
+        .filter(users::dsl::id.eq(&uuid))
         .first::<User>(conn)
         .expect("Error loading user");
 
-      Ok(item)
+      let token = user_tokens
+        .filter(user_tokens::dsl::id.eq(&token))
+        .first::<UserToken>(conn)
+        .expect("Error loading user token");
+
+      Ok((item, token))
     }
   }
 }
@@ -114,7 +140,7 @@ mod tests {
         password: "S3curePassw0rd!".to_string(),
       });
 
-      let user = result.expect("Invalid User");
+      let (user, _) = result.expect("Invalid User");
 
       assert_eq!(user.display_name, "test_user");
       assert_ne!(user.password_hash, "S3curePassw0rd!");

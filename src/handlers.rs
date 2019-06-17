@@ -45,7 +45,7 @@ pub fn handlers(app: &mut ServiceConfig) {
         .route(web::get().to_async(app::profile::account))
     )
     .service(
-      web::resource("/verify/{id}")
+      web::resource("/verify/{user_id}/{id}")
         .route(web::get().to_async(api::user::verify))
     )
     .service(

@@ -1,6 +1,5 @@
 use futures::future::*;
 use actix_web::{ HttpRequest, HttpResponse, };
-use actix_web::web::Data;
 use actix_web::middleware::identity::Identity;
 use askama::Template;
 
@@ -10,8 +9,8 @@ use crate::templates::Index;
 
 /// Creates an instance of the home page.
 pub fn index(id: Identity, req: HttpRequest) -> impl Future<Item=HttpResponse, Error=UserError> {
-  let state: Data<State> = req.app_data::<State>()
-    .expect("Unabled to fetch application state");
+  let state: &State = req.app_data::<State>()
+    .expect("Unable to fetch application state");
   let db = state.db.clone();
   let user = crate::utils::load_user(id.identity(), &db);
 

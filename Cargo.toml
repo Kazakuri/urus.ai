@@ -1,11 +1,8 @@
-cargo-features = [ "default-run" ]
-
 [package]
 name = "urusai"
 version = "0.1.0"
 authors = [ "Kazakuri <kazakuri@urus.ai>" ]
 edition = "2018"
-default-run = "urusai"
 
 [[bin]]
 name = "urusai"
@@ -21,12 +18,13 @@ path = "src/lib.rs"
 
 [dependencies]
 urusai_codegen = { path = "urusai_codegen" }
-actix = "0.8.1"
-actix-web = "1.0.0-beta.2"
-actix-files = "0.1.0-betsa.1"
-actix-rt = "0.2"
+actix = "0.8.3"
+actix-web = "1.0.0"
+actix-files = "0.1.1"
+actix-rt = "0.2.2"
 bytes = "0.4.11"
 diesel = { version = "1.4.2", features = [ "postgres", "extras", "uuidv07" ] }
+diesel-derive-enum = { version = "0.4.4", features = [ "postgres" ] }
 dotenv = "0.13.0"
 chrono = { version = "0.4", features = ["serde"] }
 serde = "1.0.90"

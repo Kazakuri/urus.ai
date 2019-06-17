@@ -9,11 +9,12 @@
     {% block head %}{% endblock %}
   </head>
   <body class="font-source-sans font-normal text-black leading-normal h-full">
-    <div id="content" class="bg-gray-200 h-full flex flex-col">
-      <div id="mascot"></div>
+    <div id="content" class="bg-gray-200 min-h-full flex flex-col">
       {% include "components/nav.html" %}
       {% include "components/message.html" %}
       {% block content %}{% endblock %}
+
+      <div id="mascot"></div>
     </div>
   </body>
 </html>

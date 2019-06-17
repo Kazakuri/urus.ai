@@ -8,6 +8,7 @@ use crate::db::DbExecutor;
 use crate::errors::UserError;
 use urusai_lib::models::user::User;
 use urusai_lib::models::short_url::ShortURL;
+use urusai_lib::models::user_token::UserToken;
 
 /// Message to create a new user by logging in with the supplied profile information
 #[derive(Deserialize, Serialize, DbMessage)]
@@ -42,12 +43,14 @@ pub struct ReadUser {
 /// Message to verify a new user's email address
 #[derive(Deserialize, Serialize, DbMessage)]
 pub struct VerifyUser {
-  /// The ID of the user to verify.
+  /// The verification token for the user.
   pub id: Uuid,
+  /// The ID of the user to verify.
+  pub user_id: Uuid,
 }
 
 impl Message for CreateUser {
-  type Result = Result<User, UserError>;
+  type Result = Result<(User, UserToken), UserError>;
 }
 
 impl Message for ReadUserProfile {
@@ -59,5 +62,5 @@ impl Message for ReadUser {
 }
 
 impl Message for VerifyUser {
-  type Result = Result<User, UserError>;
+  type Result = Result<UserToken, UserError>;
 }

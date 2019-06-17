@@ -60,6 +60,6 @@ pub fn database() -> Result<DataRepository, Error> {
 }
 
 #[cfg(test)]
-pub fn mock() -> Result<DataRepository, !> {
+pub fn mock() -> Result<DataRepository, ()> {
   Ok(Box::new(mock::MockDatabase::new()))
 }

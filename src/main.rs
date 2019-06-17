@@ -3,7 +3,9 @@
 #![allow(clippy::missing_inline_in_public_items)]
 #![allow(clippy::string_add)]
 #![allow(clippy::integer_arithmetic)]
-#![feature(never_type)]
+#![allow(clippy::implicit_return)]
+#![allow(clippy::wildcard_enum_match_arm)]
+#![warn(missing_docs)]
 
 //! Urusai code
 
@@ -49,7 +51,7 @@ pub mod db;
 /// Common enumerations for errors returned throughout the application.
 pub mod errors;
 
-/// Askama templates for compiled, paramterized application views.
+/// Askama templates for compiled, parameterized application views.
 pub mod templates;
 
 /// Utility functions that get called often within other modules.
@@ -144,3 +146,18 @@ fn main() {
 // TODO: Test
 // - Routes
 // - Template <a> tags
+
+
+/* TODO: Async Actors can't be tested. https://github.com/actix/actix-web/issues/897
+
+failures:
+    handlers::api::session::create::test::fail_wrong_password
+    handlers::api::session::create::test::success
+    handlers::api::url::create::test::fail_handleable_error
+    handlers::api::url::create::test::success_no_slug
+    handlers::api::url::create::test::success_with_slug
+    handlers::api::url::read::test::success
+    handlers::api::user::create::test::fail_handleable_error
+    handlers::api::user::create::test::success
+    utils::load_user::test::success_with_user
+*/

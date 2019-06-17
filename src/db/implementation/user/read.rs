@@ -42,7 +42,7 @@ mod tests {
     db.pool.get().unwrap()
   }
 
-  fn create_user(conn: &crate::db::implementation::Connection) -> User {
+  fn create_user(conn: &crate::db::implementation::Connection) -> (User, UserToken) {
     let result = crate::db::implementation::user::create(&conn, CreateUser {
       display_name: "test_user".to_string(),
       email: "test@user.com".to_string(),
@@ -57,7 +57,7 @@ mod tests {
     let conn = get_connection();
 
     conn.test_transaction::<_, Error, _>(|| {
-      let user = create_user(&conn);
+      let (user, _) = create_user(&conn);
 
       let result = read(&conn, &ReadUser {
         id: user.id,
