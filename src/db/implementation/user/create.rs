@@ -74,10 +74,16 @@ pub fn create(conn: &Connection, msg: CreateUser) -> <CreateUser as Message>::Re
           Some(field) => Err(UserError::InvalidValue {
             field: field.to_string(),
           }),
-          None => Err(UserError::InternalError),
+          None => {
+            error!("Expected some field for a constraint error but found none!");
+            Err(UserError::InternalError)
+          },
         }
       },
-      _ => Err(UserError::InternalError),
+      _ => {
+        error!("Could not insert into the database!");
+        Err(UserError::InternalError)
+      },
     },
     Ok(_) => {
       let token = Uuid::new_v4();
@@ -93,6 +99,7 @@ pub fn create(conn: &Connection, msg: CreateUser) -> <CreateUser as Message>::Re
         .execute(conn);
 
       if result.is_err() {
+        error!("Could not create a new user token!");
         return Err(UserError::InternalError);
       }
 
