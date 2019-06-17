@@ -1,0 +1,35 @@
+jobs:
+- job: ${{ parameters.name }}
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  variables:
+    ${{ insert }}: ${{ parameters.variables }}
+  strategy:
+    maxParallel: 10
+    matrix:
+      stable:
+        rustup_toolchain: stable
+      beta:
+        rustup_toolchain: beta
+      nightly:
+        rustup_toolchain: nightly
+  steps:
+  - ${{ parameters.setup }}
+  - template: azure-install-rust.yml
+    parameters:
+      platform: ${{parameters.name}}
+      rust_version: $(RUSTUP_TOOLCHAIN)
+  - task: NodeTool@0
+    inputs: 
+      versionSpec: "12.x"
+    displayName: Install NodeJS
+  - script: cargo install diesel_cli --no-default-features --features postgres
+    displayName: Install Diesel CLI
+  - script: diesel database setup
+    displayName: Initialize PostgresQL Database
+  - script: npm install
+    displayName: Install NPM dependencies
+  - script: cargo test
+    displayName: Run tests
+  - script: cargo doc --no-deps
+    displayName: Run rustdoc
