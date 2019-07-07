@@ -8,5 +8,5 @@ extern crate diesel_derive_enum;
 #[macro_use]
 extern crate serde_derive;
 
-pub mod schema;
 pub mod models;
+pub mod schema;

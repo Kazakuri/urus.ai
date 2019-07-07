@@ -11,6 +11,6 @@ pub mod read;
 pub mod verify;
 
 pub use self::create::create;
-pub use self::read_profile::read_profile;
 pub use self::read::read;
+pub use self::read_profile::read_profile;
 pub use self::verify::verify;
