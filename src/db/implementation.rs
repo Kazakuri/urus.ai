@@ -48,7 +48,7 @@ impl Database {
 
 use super::messages::session::CreateSession;
 use super::messages::url::{CreateURL, ReadURL};
-use super::messages::user::{CreateUser, ReadUser, ReadUserProfile, VerifyUser};
+use super::messages::user::{CreateUser, ReadUser, ReadUserProfile, VerifyUser, ChangeUserPassword};
 
 impl Repository for Database {
     fn create_session(&self, msg: CreateSession) -> <CreateSession as Message>::Result {
@@ -77,5 +77,9 @@ impl Repository for Database {
 
     fn verify_user(&self, msg: VerifyUser) -> <VerifyUser as Message>::Result {
         self::user::verify(&self.connection(), &msg)
+    }
+
+    fn change_user_password(&self, msg: ChangeUserPassword) -> <ChangeUserPassword as Message>::Result {
+        self::user::password_change(&self.connection(), &msg)
     }
 }

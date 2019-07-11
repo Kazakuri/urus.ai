@@ -54,4 +54,8 @@ impl Repository for MockDatabase {
     fn verify_user(&self, msg: VerifyUser) -> <VerifyUser as Message>::Result {
         self::user::verify(&msg)
     }
+
+    fn change_user_password(&self, msg: ChangeUserPassword) -> <ChangeUserPassword as Message>::Result {
+        self::user::password_change(&self.connection(), &msg)
+    }
 }

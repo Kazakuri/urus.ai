@@ -1,6 +1,7 @@
 #[derive(Serialize, Deserialize)]
 pub enum MessageType {
     Error,
+    Notice,
 }
 
 #[derive(Serialize, Deserialize)]

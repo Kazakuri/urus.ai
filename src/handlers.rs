@@ -37,6 +37,9 @@ pub fn handlers(app: &mut ServiceConfig) {
         .service(
             web::resource("/verify/{user_id}/{id}").route(web::get().to_async(api::user::verify)),
         )
+        .service(
+            web::resource("/account/password").route(web::post().to_async(api::user::password_change)),
+        )
         .service(web::resource("/{slug}").route(web::get().to_async(api::url::read)));
 }
 

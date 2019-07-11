@@ -49,6 +49,22 @@ pub struct VerifyUser {
     pub user_id: Uuid,
 }
 
+///
+#[derive(Deserialize, Serialize, DbMessage)]
+pub struct ChangeUserPassword {
+    /// The ID of the user being updated.
+    pub id: Uuid,
+
+    /// 
+    pub new_password: String,
+
+    /// 
+    pub current_password: String,
+
+    /// 
+    pub confirm_password: String,
+}
+
 impl Message for CreateUser {
     type Result = Result<(User, UserToken), UserError>;
 }
@@ -63,4 +79,8 @@ impl Message for ReadUser {
 
 impl Message for VerifyUser {
     type Result = Result<UserToken, UserError>;
+}
+
+impl Message for ChangeUserPassword {
+    type Result = Result<User, UserError>;
 }

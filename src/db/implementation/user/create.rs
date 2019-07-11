@@ -1,19 +1,13 @@
 use actix::Message;
-use lazy_static::lazy_static;
-use regex::RegexSet;
 use sodiumoxide::crypto::pwhash::argon2id13;
 use uuid::Uuid;
 
 use crate::db::implementation::Connection;
 use crate::db::messages::user::CreateUser;
 use crate::errors::UserError;
+use crate::utils::validate_and_hash_password;
 use urusai_lib::models::user::{NewUser, User};
 use urusai_lib::models::user_token::{NewUserToken, TokenScope, UserToken};
-
-lazy_static! {
-    static ref REGEX_SET: RegexSet = RegexSet::new(&[r"[A-Z]", r"[a-z]", r"[\d]", r"\W",])
-        .expect("Unable to create regex set for password complexity validation");
-}
 
 /// Creates a new user from a `CreateUser` message within the `Connection`, returning the newly created `User`.
 ///
@@ -30,34 +24,22 @@ pub fn create(conn: &Connection, msg: CreateUser) -> <CreateUser as Message>::Re
     use diesel::RunQueryDsl;
 
     let uuid = Uuid::new_v4();
+    
+    
 
-    if msg.password.len() < 8 {
-        return Err(UserError::PasswordTooShort);
-    }
+    let result = match validate_and_hash_password(msg.password) {
+        Ok(hash) => {
+            let mut new_user = NewUser {
+                id: &uuid,
+                display_name: &msg.display_name,
+                email: &msg.email,
+                password_hash: &hash,
+            };
 
-    if REGEX_SET.matches(&msg.password).len() != REGEX_SET.len() {
-        return Err(UserError::PasswordNotComplex);
-    }
-
-    let pwh = argon2id13::pwhash(
-        &msg.password.into_bytes()[..],
-        argon2id13::OPSLIMIT_INTERACTIVE,
-        argon2id13::MEMLIMIT_INTERACTIVE,
-    )
-    .expect("Unable to hash password");
-
-    let hashed_password =
-        String::from_utf8(pwh[..].to_vec()).expect("Unable to parse hashed password");
-
-    let new_user = NewUser {
-        id: &uuid,
-        display_name: &msg.display_name,
-        email: &msg.email,
-        // argon2 passwords are padded by null bytes and Postgres can't store null bytes, so we strip them
-        password_hash: &hashed_password.trim_matches(char::from(0)),
+            diesel::insert_into(users).values(&new_user).execute(conn)
+        },
+        Err(e) => return Err(e)
     };
-
-    let result = diesel::insert_into(users).values(&new_user).execute(conn);
 
     match result {
         Err(e) => match e {

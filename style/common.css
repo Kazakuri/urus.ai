@@ -95,6 +95,18 @@ button {
   }
 }
 
+.inline-form > h2 {
+  @apply block uppercase tracking-wide text-gray-700 font-bold mb-2;
+}
+
+.inline-form > div {
+  @apply flex flex-wrap mb-6;
+
+  label {
+    @apply block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2;
+  }
+}
+
 .modal-form {
   @apply mt-20 w-full max-w-2xl flex rounded overflow-hidden shadow-md;
 

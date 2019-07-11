@@ -1,10 +1,10 @@
 use actix::Message;
-use bcrypt;
-use sodiumoxide::crypto::pwhash::argon2id13;
 
 use crate::db::implementation::Connection;
 use crate::db::messages::session::CreateSession;
 use crate::errors::UserError;
+use crate::utils::verify_password;
+
 use urusai_lib::models::user::User;
 
 /// Validates a `CreateSession` message against the `Connection`, returning a `User` on successful login.
@@ -22,29 +22,7 @@ pub fn create(conn: &Connection, msg: &CreateSession) -> <CreateSession as Messa
 
     match user {
         Ok(user) => {
-            let mut bytes = user.password_hash.as_bytes().to_vec();
-
-            if !bytes.starts_with(&b"$argon2id$"[..]) {
-                return match bcrypt::verify(&msg.password, &user.password_hash) {
-                    Ok(ok) => {
-                        return if ok {
-                            Ok(user)
-                        } else {
-                            Err(UserError::LoginError)
-                        }
-                    }
-                    Err(_) => Err(UserError::LoginError),
-                };
-            }
-
-            // argon2 passwords are padded by null bytes and Postgres can't store null bytes, so we strip them
-            // Here we re-pad the loaded password with null bytes to reverse the stripping we did when we generated the hash.
-            bytes.resize(128, 0x00);
-
-            let hash = argon2id13::HashedPassword::from_slice(&bytes[..])
-                .expect("Could not resolve password_hash as a valid argon2id hash");
-
-            if argon2id13::pwhash_verify(&hash, &msg.password.as_bytes()[..]) {
+            if verify_password(&user, &msg.password) {
                 if user.email_verified {
                     Ok(user)
                 } else {

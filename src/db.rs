@@ -7,7 +7,7 @@ pub mod messages;
 
 use self::messages::session::CreateSession;
 use self::messages::url::{CreateURL, ReadURL};
-use self::messages::user::{CreateUser, ReadUser, ReadUserProfile, VerifyUser};
+use self::messages::user::{CreateUser, ReadUser, ReadUserProfile, VerifyUser, ChangeUserPassword};
 
 /// Production ready implementation of a Postgres database connection.
 mod implementation;
@@ -34,6 +34,8 @@ pub trait Repository: Sync + Send {
     fn read_user_profile(&self, msg: ReadUserProfile) -> <ReadUserProfile as Message>::Result;
     /// Verifies a User's email from a VerifyUser message
     fn verify_user(&self, msg: VerifyUser) -> <VerifyUser as Message>::Result;
+    ///
+    fn change_user_password(&self, msg: ChangeUserPassword) -> <ChangeUserPassword as Message>::Result;
 }
 
 /// A boxed type for any struct that implements the Repository trait.

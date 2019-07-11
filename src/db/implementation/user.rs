@@ -10,7 +10,11 @@ pub mod read;
 /// Functions to trigger the validation of a User in the database.
 pub mod verify;
 
+/// 
+pub mod password_change;
+
 pub use self::create::create;
 pub use self::read::read;
 pub use self::read_profile::read_profile;
 pub use self::verify::verify;
+pub use self::password_change::password_change;
