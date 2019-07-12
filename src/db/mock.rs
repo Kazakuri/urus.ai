@@ -24,7 +24,7 @@ impl MockDatabase {
 
 use super::messages::session::CreateSession;
 use super::messages::url::{CreateURL, ReadURL};
-use super::messages::user::{CreateUser, ReadUser, ReadUserProfile, VerifyUser};
+use super::messages::user::{CreateUser, ReadUser, ReadUserProfile, VerifyUser, ChangeUserPassword};
 
 impl Repository for MockDatabase {
     fn create_session(&self, msg: CreateSession) -> <CreateSession as Message>::Result {
@@ -56,6 +56,6 @@ impl Repository for MockDatabase {
     }
 
     fn change_user_password(&self, msg: ChangeUserPassword) -> <ChangeUserPassword as Message>::Result {
-        self::user::password_change(&self.connection(), &msg)
+        self::user::password_change(&msg)
     }
 }
