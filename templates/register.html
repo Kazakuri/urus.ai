@@ -5,13 +5,14 @@
 {% block head %}
   <style>
     #image {
-      background-image: url(https://via.placeholder.com/468x468);
+      background-image: url(/res/img/register.png);
     }
   </style>
 {% endblock %}
 
 {% block content %}
   <div class="content">
+    <h1 class="text-center py-4">Register</h1>
     <div class="modal-form">
       <div id="image"></div>
       <form action="/register" method="POST">

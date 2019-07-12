@@ -133,7 +133,7 @@ fn main() {
             ))
             .configure(handlers::handlers)
     })
-    .bind("127.0.0.1:3000")
+    .bind("0.0.0.0:3000")
     .expect("Unable to bind to port")
     .start();
 

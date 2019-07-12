@@ -14,11 +14,11 @@
   width: 70vw;
   max-width: 500px;
   height: 70vw;
-  background-image: url(https://via.placeholder.com/468x468);
+  background-image: url(/res/img/mascot.png);
 }
 
 @screen lg {
   #mascot {
-    @apply fixed top-0 right-0 w-1/5 max-w-xs h-full bg-right-bottom m-0;
+    @apply fixed top-0 right-0 w-1/4 max-w-sm h-full bg-right-bottom m-0;
   }
 }

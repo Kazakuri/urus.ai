@@ -43,7 +43,7 @@ button {
 }
 
 .content {
-  @apply w-full flex items-center justify-center flex-grow;
+  @apply w-full flex flex-col items-center justify-center flex-grow;
 }
 
 .section {
@@ -108,7 +108,7 @@ button {
 }
 
 .modal-form {
-  @apply mt-20 w-full max-w-2xl flex rounded overflow-hidden shadow-md;
+  @apply mt-20 w-full max-w-2xl flex rounded;
 
   #image {
     @apply hidden bg-cover bg-no-repeat w-full px-8 pt-6 pb-8;
