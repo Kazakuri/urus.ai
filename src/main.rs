@@ -143,17 +143,3 @@ fn main() {
 // TODO: Test
 // - Routes
 // - Template <a> tags
-
-/* TODO: Async Actors can't be tested. https://github.com/actix/actix-web/issues/897
-
-failures:
-    handlers::api::session::create::test::fail_wrong_password
-    handlers::api::session::create::test::success
-    handlers::api::url::create::test::fail_handleable_error
-    handlers::api::url::create::test::success_no_slug
-    handlers::api::url::create::test::success_with_slug
-    handlers::api::url::read::test::success
-    handlers::api::user::create::test::fail_handleable_error
-    handlers::api::user::create::test::success
-    utils::load_user::test::success_with_user
-*/

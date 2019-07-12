@@ -72,7 +72,7 @@ pub struct ProfileURLs<'a> {
 #[template(path = "profile/account.html")]
 /// Account section of the profile of the currently logged in user.
 ///
-/// From here, the user can TODO.
+/// From here, the user can update their account information, such as their password.
 pub struct ProfileAccount<'a> {
     /// The currently logged in `User`.
     pub user: &'a Option<User>,
