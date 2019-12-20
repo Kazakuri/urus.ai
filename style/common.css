@@ -32,14 +32,23 @@ button {
   }
 }
 
+.notice,
 .alert {
-  @apply fixed w-2/3 bg-red-100 border border-red-400 text-red-600 px-4 py-3 rounded;
+  @apply fixed w-2/3 border px-4 py-3 rounded;
 
   margin: 60px 16.66666666667%;
 
   strong {
     @apply font-bold;
   }
+}
+
+.alert {
+  @apply bg-red-100 border-red-400 text-red-600;
+}
+
+.notice {
+  @apply bg-green-100 border-green-400 text-green-600;
 }
 
 .content {

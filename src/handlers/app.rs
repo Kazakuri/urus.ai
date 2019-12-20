@@ -1,14 +1,7 @@
-/// Home page
 pub mod index;
-
-/// Login page
 pub mod login;
-
-/// Register page
-pub mod register;
-
-/// User profile
 pub mod profile;
+pub mod register;
 
 pub use self::index::index;
 pub use self::login::login;

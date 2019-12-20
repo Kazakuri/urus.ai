@@ -1,5 +1,5 @@
 CREATE TABLE urls (
-  id             UUID         PRIMARY KEY,
+  id             UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id        UUID         REFERENCES users(id) ON DELETE CASCADE,
   slug           VARCHAR(100) NOT NULL CONSTRAINT "Short URL" UNIQUE,
   url            VARCHAR(256) NOT NULL,

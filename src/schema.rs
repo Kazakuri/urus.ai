@@ -11,12 +11,10 @@ table! {
 }
 
 table! {
-    use diesel::sql_types::{ Uuid, Timestamp };
-    use crate::models::user_token::TokenScopeMapping;
     user_tokens (id) {
         id -> Uuid,
         user_id -> Uuid,
-        scope -> TokenScopeMapping,
+        scope -> TokenScope,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }
@@ -36,4 +34,8 @@ table! {
 
 joinable!(urls -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(urls, user_tokens, users,);
+allow_tables_to_appear_in_same_query!(
+    urls,
+    user_tokens,
+    users,
+);
