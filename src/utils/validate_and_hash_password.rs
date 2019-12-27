@@ -13,7 +13,7 @@ pub fn validate_and_hash_password(password: String) -> Result<String, UserError>
     return Err(UserError::PasswordTooShort);
   }
 
-  if REGEX_SET.matches(&password).len() != REGEX_SET.len() {
+  if REGEX_SET.matches(&password).iter().count() != REGEX_SET.len() {
     return Err(UserError::PasswordNotComplex);
   }
 
