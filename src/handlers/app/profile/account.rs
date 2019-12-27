@@ -1,5 +1,5 @@
 use actix_identity::Identity;
-use actix_web::{HttpRequest, HttpResponse};
+use actix_web::{web::Data, HttpResponse};
 use askama::Template;
 use uuid::Uuid;
 
@@ -8,9 +8,7 @@ use crate::errors::UserError;
 use crate::templates::ProfileAccount;
 use crate::State;
 
-pub async fn account(id: Identity, req: HttpRequest) -> Result<HttpResponse, UserError> {
-  let state: &State = req.app_data::<State>().expect("Unable to fetch application state");
-
+pub async fn account(id: Identity, state: Data<State>) -> Result<HttpResponse, UserError> {
   if let Some(id) = id.identity() {
     let db = state.db.clone();
 

@@ -1,13 +1,12 @@
 use actix_identity::Identity;
-use actix_web::{HttpRequest, HttpResponse};
+use actix_web::{web::Data, HttpResponse};
 use askama::Template;
 
 use crate::errors::UserError;
 use crate::templates::Index;
 use crate::State;
 
-pub async fn index(id: Identity, req: HttpRequest) -> Result<HttpResponse, UserError> {
-  let state: &State = req.app_data::<State>().expect("Unable to fetch application state");
+pub async fn index(id: Identity, state: Data<State>) -> Result<HttpResponse, UserError> {
   let db = state.db.clone();
 
   let user = crate::utils::load_user(id.identity(), &db).await;

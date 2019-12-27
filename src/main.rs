@@ -77,9 +77,7 @@ async fn main() -> std::io::Result<()> {
     };
 
     #[cfg(any(test, not(feature = "mq")))]
-    let state = State {
-      db: pool.clone(),
-    };
+    let state = State { db: pool.clone() };
 
     App::new()
       .data(state)

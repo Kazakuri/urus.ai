@@ -1,12 +1,11 @@
-use actix_web::{http, HttpRequest, HttpResponse};
+use actix_web::{http, web::Data, HttpRequest, HttpResponse};
 use uuid::Uuid;
 
 use crate::db::user::VerifyUser;
 use crate::errors::UserError;
 use crate::State;
 
-pub async fn verify(req: HttpRequest) -> Result<HttpResponse, UserError> {
-  let state: &State = req.app_data::<State>().expect("Unable to fetch application state");
+pub async fn verify(state: Data<State>, req: HttpRequest) -> Result<HttpResponse, UserError> {
   let db = state.db.clone();
 
   if req.match_info().get("id").is_none() {

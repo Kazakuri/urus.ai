@@ -1,6 +1,6 @@
 use askama::Template;
 
-use urusai_lib::models::message::{ Message, MessageType };
+use urusai_lib::models::message::{Message, MessageType};
 use urusai_lib::models::short_url::ShortURL;
 use urusai_lib::models::user::User;
 

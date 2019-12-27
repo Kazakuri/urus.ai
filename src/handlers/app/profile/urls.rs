@@ -1,6 +1,6 @@
 use actix_identity::Identity;
 use actix_web::web::Query;
-use actix_web::{FromRequest, HttpRequest, HttpResponse};
+use actix_web::{web::Data, FromRequest, HttpRequest, HttpResponse};
 use askama::Template;
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -10,8 +10,7 @@ use crate::errors::UserError;
 use crate::templates::ProfileURLs;
 use crate::State;
 
-pub async fn urls(id: Identity, req: HttpRequest) -> Result<HttpResponse, UserError> {
-  let state: &State = req.app_data::<State>().expect("Unable to fetch application state");
+pub async fn urls(id: Identity, state: Data<State>, req: HttpRequest) -> Result<HttpResponse, UserError> {
   if let Some(id) = id.identity() {
     let db = state.db.clone();
     let query = Query::<HashMap<String, String>>::extract(&req).await;

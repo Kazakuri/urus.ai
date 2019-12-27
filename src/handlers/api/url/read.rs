@@ -1,5 +1,5 @@
 use actix_identity::Identity;
-use actix_web::{http, HttpRequest, HttpResponse};
+use actix_web::{http, web::Data, HttpRequest, HttpResponse};
 use askama::Template;
 
 use crate::db::url::ReadURL;
@@ -8,8 +8,7 @@ use crate::templates::Index;
 use crate::State;
 use urusai_lib::models::message::{Message, MessageType};
 
-pub async fn read(id: Identity, req: HttpRequest) -> Result<HttpResponse, UserError> {
-  let state: &State = req.app_data::<State>().expect("Unable to fetch application state");
+pub async fn read(id: Identity, state: Data<State>, req: HttpRequest) -> Result<HttpResponse, UserError> {
   let db = state.db.clone();
 
   let user = crate::utils::load_user(id.identity(), &db).await;

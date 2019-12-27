@@ -1,5 +1,5 @@
 use actix_web::web::Form;
-use actix_web::{HttpRequest, HttpResponse};
+use actix_web::{web::Data, HttpResponse};
 use askama::Template;
 
 use crate::db::user::CreateUser;
@@ -11,8 +11,7 @@ use urusai_lib::models::message::{Message, MessageType};
 #[cfg(all(not(test), feature = "mq"))]
 use crate::JobQueue;
 
-pub async fn create(form: Form<CreateUser>, req: HttpRequest) -> Result<HttpResponse, UserError> {
-  let state: &State = req.app_data::<State>().expect("Unable to fetch application state");
+pub async fn create(form: Form<CreateUser>, state: Data<State>) -> Result<HttpResponse, UserError> {
   let db = state.db.clone();
 
   #[cfg(all(not(test), feature = "mq"))]

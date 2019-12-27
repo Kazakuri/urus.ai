@@ -1,6 +1,6 @@
 use actix_identity::Identity;
 use actix_web::web::Form;
-use actix_web::{HttpRequest, HttpResponse};
+use actix_web::{web::Data, HttpResponse};
 use askama::Template;
 
 use crate::db::user::ChangeUserPassword;
@@ -12,9 +12,8 @@ use urusai_lib::models::message::{Message, MessageType};
 pub async fn password_change(
   id: Identity,
   form: Form<ChangeUserPassword>,
-  req: HttpRequest,
+  state: Data<State>,
 ) -> Result<HttpResponse, UserError> {
-  let state: &State = req.app_data::<State>().expect("Unable to fetch application state");
   let db = state.db.clone();
 
   let user = crate::utils::load_user(id.identity(), &db).await;
