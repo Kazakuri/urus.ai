@@ -29,3 +29,41 @@ pub fn validate_and_hash_password(password: String) -> Result<String, UserError>
   // argon2 passwords are padded by null bytes and Postgres can't store null bytes, so we strip them
   Ok(hashed_password.trim_matches(char::from(0)).to_string())
 }
+
+#[cfg(test)]
+mod test {
+  use super::{ validate_and_hash_password, UserError };
+
+  #[test]
+  fn too_short() {
+    let res = validate_and_hash_password("short".to_string());
+
+    assert!(res.is_err());
+    assert_eq!(res.err(), Some(UserError::PasswordTooShort));
+  }
+
+  #[test]
+  fn not_complex() {
+    let res = validate_and_hash_password("toosimple".to_string());
+
+    assert!(res.is_err());
+    assert_eq!(res.err(), Some(UserError::PasswordNotComplex));
+
+    let res = validate_and_hash_password("toosimple1".to_string());
+
+    assert!(res.is_err());
+    assert_eq!(res.err(), Some(UserError::PasswordNotComplex));
+
+    let res = validate_and_hash_password("TooSimple1".to_string());
+
+    assert!(res.is_err());
+    assert_eq!(res.err(), Some(UserError::PasswordNotComplex));
+  }
+
+  #[test]
+  fn ok() {
+    let res = validate_and_hash_password("GoodPassword1!".to_string());
+
+    assert!(res.is_ok());
+  }
+}
