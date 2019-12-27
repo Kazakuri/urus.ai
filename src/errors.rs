@@ -85,6 +85,15 @@ impl From<std::io::Error> for UserError {
   }
 }
 
+impl From<deadpool::PoolError<tokio_postgres::error::Error>> for UserError {
+  fn from(err: deadpool::PoolError<tokio_postgres::error::Error>) -> UserError {
+    match err {
+      deadpool::PoolError::Timeout(_) => UserError::InternalError,
+      deadpool::PoolError::Backend(e) => e.into()
+    }
+  }
+}
+
 impl From<tokio_postgres::error::Error> for UserError {
   fn from(err: tokio_postgres::error::Error) -> UserError {
     let db_error = err.source()

@@ -97,6 +97,6 @@ async fn main() -> std::io::Result<()> {
   })
   .bind("0.0.0.0:3000")
   .expect("Unable to bind to port")
-  .start()
+  .run()
   .await
 }
