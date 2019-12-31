@@ -45,7 +45,7 @@ fn main() {
 
   run_npm_command(
     "postcss",
-    &vec!["style/style.css", ">", "public/style.min.css"],
+    &vec!["style/style.css", ">", "public/res/style.min.css"],
     "Failed to build minified CSS",
   );
 
