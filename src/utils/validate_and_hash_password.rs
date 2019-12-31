@@ -32,7 +32,7 @@ pub fn validate_and_hash_password(password: String) -> Result<String, UserError>
 
 #[cfg(test)]
 mod test {
-  use super::{ validate_and_hash_password, UserError };
+  use super::{validate_and_hash_password, UserError};
 
   #[test]
   fn too_short() {
