@@ -11,20 +11,19 @@ pub struct CreateURL {
 }
 
 lazy_static! {
-  static ref URL_BLACKLIST: Vec<&'static str> =
-    vec![
-      "://urus.ai", 
-      "://polr.me", 
-      "://bit.ly", 
-      "://is.gd", 
-      "://tiny.cc", 
-      "://adf.ly", 
-      "://ur1.ca", 
-      "://goo.gl", 
-      "://ow.ly", 
-      "://j.mp", 
-      "://t.co",
-    ];
+  static ref URL_BLACKLIST: Vec<&'static str> = vec![
+    "://urus.ai",
+    "://polr.me",
+    "://bit.ly",
+    "://is.gd",
+    "://tiny.cc",
+    "://adf.ly",
+    "://ur1.ca",
+    "://goo.gl",
+    "://ow.ly",
+    "://j.mp",
+    "://t.co",
+  ];
 }
 
 lazy_static! {
@@ -78,9 +77,7 @@ pub async fn create(pool: &Pool, msg: CreateURL) -> Result<String, UserError> {
     return Err(UserError::InvalidCharactersInURL);
   }
 
-  client
-    .execute(&prepared_statement, &[&url_slug, &url])
-    .await?;
+  client.execute(&prepared_statement, &[&url_slug, &url]).await?;
 
   Ok(url_slug)
 }

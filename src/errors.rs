@@ -106,7 +106,7 @@ impl From<tokio_postgres::error::Error> for UserError {
       None => {
         debug!("{:?}", err);
         UserError::InternalError
-      },
+      }
     }
   }
 }
