@@ -6,7 +6,7 @@ a {
 }
 
 h1 {
-  @apply text-2xl;
+  @apply text-4xl;
 }
 
 input[type=text],
@@ -21,25 +21,34 @@ input:focus {
 }
 
 button {
-  @apply bg-red-600 text-white font-bold py-2 px-4 rounded ml-2;
+  @apply bg-red-500 text-white font-bold py-2 px-4 rounded ml-2;
 
   &:hover {
-    @apply bg-red-700;
+    @apply bg-red-600;
   }
 
   &:focus {
-    @apply outline-none shadow-outline;
+    @apply outline-none ring;
   }
 }
 
+.notice,
 .alert {
-  @apply fixed w-2/3 bg-red-100 border border-red-400 text-red-600 px-4 py-3 rounded;
+  @apply fixed w-2/3 border px-4 py-3 rounded;
 
   margin: 60px 16.66666666667%;
 
   strong {
     @apply font-bold;
   }
+}
+
+.alert {
+  @apply bg-red-100 border-red-400 text-red-500;
+}
+
+.notice {
+  @apply bg-green-100 border-green-400 text-green-600;
 }
 
 .content {
@@ -83,7 +92,7 @@ button {
   }
 
   a.active {
-    @apply bg-red-600 border-red-500 text-white;
+    @apply bg-red-500 border-red-400 text-white;
   }
 
   a:hover:not(.active):not(.disabled) {

@@ -1,114 +1,112 @@
-use actix::MailboxError;
 use actix_web::error::{JsonPayloadError, UrlencodedError};
 use actix_web::{error, http, HttpResponse};
+use std::error::Error;
+use thiserror::Error;
+use tokio_postgres::error::{DbError, SqlState};
 
-#[derive(Fail, Debug, PartialEq)]
-/// User-facing error messages
+#[derive(Error, Debug, PartialEq)]
 pub enum UserError {
-    // ==================================
-    // Database Errors
-    // ==================================
-    #[fail(display = "{} is already in use!", field)]
-    /// The value being inserted violates a unique constraint in the database.
-    DuplicateValue {
-        /// The field that violated the constraint
-        field: String,
-    },
+  // ==================================
+  // Database Errors
+  // ==================================
+  #[error("{} is already in use!", field)]
+  DuplicateValue { field: String },
 
-    #[fail(display = "{} does not exist!", field)]
-    /// The value being inserted violates a foreign key constraint in the database.
-    UnknownValue {
-        /// The field that violated the foreign key constraint
-        field: String,
-    },
+  #[error("{} does not exist!", field)]
+  UnknownValue { field: String },
 
-    #[fail(display = "{} is not valid!", field)]
-    /// The value being inserted violates a check constraint in the database.
-    InvalidValue {
-        /// The field that violated the check constraint
-        field: String,
-    },
+  #[error("{} is not valid!", field)]
+  InvalidValue { field: String },
 
-    #[fail(display = "Not found.")]
-    /// The requested record doesn't exist in the database.
-    NotFound,
+  #[error("Not found.")]
+  NotFound,
 
-    // ==================================
-    // Session Errors
-    // ==================================
-    #[fail(display = "Invalid login.")]
-    /// The login information provided from the user was not valid.
-    LoginError,
+  // ==================================
+  #[error("Invalid characters in URL.")]
+  InvalidCharactersInURL,
 
-    #[fail(display = "Email not verified")]
-    /// The user tried to login without first verifying their account.
-    EmailNotVerified,
+  #[error("The provided link looks like it's already shortened.")]
+  LinkAlreadyShortened,
 
-    // ==================================
-    // User Create Errors
-    // ==================================
-    #[fail(display = "Password too short. Passwords should contain at least 8 characters.")]
-    /// User supplied password failed our length test.
-    PasswordTooShort,
+  #[error("That doesn't look like a URL, try again.")]
+  InvalidLink,
 
-    #[fail(
-        display = "Password not complex enough. Passwords should contain at least one lowercase letter, one uppercase letter, one number, and one symbol."
-    )]
-    /// User supplied password failed our complexity test.
-    PasswordNotComplex,
+  #[error("An internal error occurred. Please try again later.")]
+  InternalError,
 
-    // ==================================
-    #[fail(display = "Invalid characters in URL.")]
-    /// When creating a ShortURL, the user supplied non-URL-friendly characters.
-    InvalidCharactersInURL,
-
-    #[fail(display = "The provided link looks like it's already shortened.")]
-    /// When creating a ShortURL, the user supplied a URL that was already shortened.
-    LinkAlreadyShortened,
-
-    #[fail(display = "That doesn't look like a URL, try again.")]
-    /// When creating a ShortURL, the user supplied something that doesn't look like a URL.
-    InvalidLink,
-
-    #[fail(display = "An internal error occurred. Please try again later.")]
-    /// Something failed, but it wasn't the user's fault.
-    InternalError,
-
-    #[fail(display = "Bad Request.")]
-    /// The user provided a malformed request.
-    BadRequest,
+  #[error("Bad Request.")]
+  BadRequest,
 }
 
 impl error::ResponseError for UserError {
-    fn error_response(&self) -> HttpResponse {
-        error!("{}", *self);
-        match *self {
-            UserError::InternalError => HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR),
-            _ => HttpResponse::new(http::StatusCode::BAD_REQUEST),
-        }
+  fn error_response(&self) -> HttpResponse {
+    error!("{}", *self);
+    match *self {
+      UserError::InternalError => HttpResponse::new(http::StatusCode::INTERNAL_SERVER_ERROR),
+      _ => HttpResponse::new(http::StatusCode::BAD_REQUEST),
     }
+  }
 }
 
 impl From<JsonPayloadError> for UserError {
-    fn from(_err: JsonPayloadError) -> UserError {
-        UserError::InternalError
-    }
-}
-
-impl From<MailboxError> for UserError {
-    fn from(_err: MailboxError) -> UserError {
-        UserError::InternalError
-    }
+  fn from(_err: JsonPayloadError) -> UserError {
+    UserError::InternalError
+  }
 }
 
 impl From<UrlencodedError> for UserError {
-    fn from(_err: UrlencodedError) -> UserError {
-        UserError::BadRequest
-    }
+  fn from(_err: UrlencodedError) -> UserError {
+    UserError::BadRequest
+  }
 }
 
 impl From<std::io::Error> for UserError {
-    fn from(_err: std::io::Error) -> UserError {
-        UserError::InternalError
+  fn from(_err: std::io::Error) -> UserError {
+    UserError::InternalError
+  }
+}
+
+impl From<deadpool::managed::PoolError<tokio_postgres::error::Error>> for UserError {
+  fn from(err: deadpool::managed::PoolError<tokio_postgres::error::Error>) -> UserError {
+    match err {
+      deadpool::managed::PoolError::Backend(e) => e.into(),
+      _ => UserError::InternalError,
     }
+  }
+}
+
+impl From<tokio_postgres::error::Error> for UserError {
+  fn from(err: tokio_postgres::error::Error) -> UserError {
+    let db_error = err.source().and_then(|e| e.downcast_ref::<DbError>());
+
+    let code = db_error.map(DbError::code);
+
+    let constraint = db_error.and_then(DbError::constraint).unwrap_or("Unknown").to_string();
+
+    match code {
+      Some(s) => {
+        // TODO: Is there a better way to write this?
+        // Matching against SqlState::UNIQUE_VIOLATION says:
+        //   std::borrow::Cow must be annotated with #[derive(PartialEq, Eq)]`
+        if s.code() == SqlState::UNIQUE_VIOLATION.code() {
+          return UserError::DuplicateValue { field: constraint };
+        }
+
+        if s.code() == SqlState::FOREIGN_KEY_VIOLATION.code() {
+          return UserError::UnknownValue { field: constraint };
+        }
+
+        if s.code() == SqlState::CHECK_VIOLATION.code() {
+          return UserError::InvalidValue { field: constraint };
+        }
+
+        debug!("{:?}", err);
+        UserError::InvalidValue { field: constraint }
+      }
+      None => {
+        debug!("{:?}", err);
+        UserError::InternalError
+      }
+    }
+  }
 }

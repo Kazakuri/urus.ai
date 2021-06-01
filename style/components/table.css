@@ -14,7 +14,7 @@ div.table {
     @apply sticky;
 
     .row div {
-      @apply bg-red-600 font-sans font-medium text-sm text-white
+      @apply bg-red-500 font-sans font-medium text-sm text-white
     }
   }
 

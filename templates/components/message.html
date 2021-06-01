@@ -1,8 +1,16 @@
 {% match message %}
   {% when Some with (val) %}
-  <div class="alert" role="alert">
-    <strong>Error:</strong>
-    <span class="block sm:inline">{{ val.message }}</span>
-  </div>
+    {% match val.message_type %}
+      {% when MessageType::Error %}
+      <div class="alert" role="alert">
+        <strong>Error:</strong>
+        <span class="block sm:inline">{{ val.message }}</span>
+      </div>
+      {% when MessageType::Notice %}
+      <div class="notice" role="alert">
+        <strong>Notice:</strong>
+        <span class="block sm:inline">{{ val.message }}</span>
+      </div>
+    {% endmatch %}
   {% when None %}
 {% endmatch %}
