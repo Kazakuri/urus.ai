@@ -8,8 +8,8 @@
 
     {% block head %}{% endblock %}
   </head>
-  <body class="font-source-sans font-normal text-black leading-normal h-full">
-    <div id="content" class="bg-gray-200 min-h-full flex flex-col">
+  <body class="font-sans font-normal text-black dark:text-white leading-normal h-full">
+    <div id="content" class="bg-gray-200 dark:bg-gray-800 min-h-full flex flex-col">
       {% include "components/nav.html" %}
       {% include "components/message.html" %}
       {% block content %}{% endblock %}

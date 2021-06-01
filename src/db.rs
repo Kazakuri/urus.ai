@@ -2,11 +2,9 @@ use deadpool_postgres::Manager;
 use std::env;
 use tokio_postgres::{Config, NoTls};
 
-pub use deadpool_postgres::Pool;
+pub type Pool = deadpool_postgres::Pool<NoTls>;
 
-pub mod session;
 pub mod url;
-pub mod user;
 
 pub fn create_pool() -> Pool {
   let url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");

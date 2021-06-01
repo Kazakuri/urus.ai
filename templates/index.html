@@ -46,7 +46,7 @@
 {% endblock %}
 
 {% block content %}
-  <div class="mx-auto py-4 w-full max-w-lg text-center mt-12">
+  <div class="mx-auto py-4 container text-center mt-12">
       <h1>urus.ai</h1>
       <p>I-It's not like I want to shorten your URLs or anything, b-baka!</p>
       <hr class="my-8 border" />
@@ -60,7 +60,7 @@
           <div class="expandable">
             <input type="checkbox" name="expand" id="expand">
             <div class="flex">
-              <label for="expand" class="bg-gray-200">
+              <label for="expand" class="bg-gray-200 dark:bg-gray-800">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path class="secondary" fill-rule="evenodd" d="M15.3 10.3a1 1 0 0 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 1.4-1.4l3.3 3.29 3.3-3.3z"/>
                 </svg>
@@ -74,16 +74,17 @@
       {% match url %}
         {% when Some with (val) %}
           <hr class="my-8 border" />
-          <div class="bg-red-100 border-t-4 border-red-500 rounded-b text-red-600est px-4 py-3 shadow-md" role="alert">
+          <div class="bg-green-100 dark:bg-green-700 border-t-4 border-green-500 rounded-b px-4 py-3 shadow-md" role="alert">
             <div class="flex">
               <div class="py-1">
-                <svg class="fill-current h-6 w-6 text-red-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <svg class="fill-current h-6 w-6 text-green-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                   <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
                 </svg>
               </div>
-              <div class="text-left">
+              <div class="text-left flex-grow">
                 <p class="font-bold">Link Created</p>
-                <p class="text-sm">Your shortened URL has been created: {{val}}</p>
+                <p class="text-sm">Your shortened URL has been created</p>
+                <input type="text" value="{{val}}" id="short_url" autofocus="autofocus" onfocus="this.select()">
               </div>
             </div>
           </div>

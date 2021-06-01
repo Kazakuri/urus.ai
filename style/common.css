@@ -6,7 +6,7 @@ a {
 }
 
 h1 {
-  @apply text-2xl;
+  @apply text-4xl;
 }
 
 input[type=text],
@@ -21,14 +21,14 @@ input:focus {
 }
 
 button {
-  @apply bg-red-600 text-white font-bold py-2 px-4 rounded ml-2;
+  @apply bg-red-500 text-white font-bold py-2 px-4 rounded ml-2;
 
   &:hover {
-    @apply bg-red-700;
+    @apply bg-red-600;
   }
 
   &:focus {
-    @apply outline-none shadow-outline;
+    @apply outline-none ring;
   }
 }
 
@@ -44,7 +44,7 @@ button {
 }
 
 .alert {
-  @apply bg-red-100 border-red-400 text-red-600;
+  @apply bg-red-100 border-red-400 text-red-500;
 }
 
 .notice {
@@ -92,7 +92,7 @@ button {
   }
 
   a.active {
-    @apply bg-red-600 border-red-500 text-white;
+    @apply bg-red-500 border-red-400 text-white;
   }
 
   a:hover:not(.active):not(.disabled) {

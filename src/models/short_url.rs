@@ -4,7 +4,6 @@ use uuid::Uuid;
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ShortURL {
   pub id: Uuid,
-  pub user_id: Option<Uuid>,
   pub slug: String,
   pub url: String,
   pub visits: i64,
@@ -15,7 +14,6 @@ pub struct ShortURL {
 #[derive(Debug)]
 pub struct NewShortURL<'a> {
   pub id: &'a Uuid,
-  pub user_id: Option<Uuid>,
   pub slug: &'a str,
   pub url: &'a str,
 }

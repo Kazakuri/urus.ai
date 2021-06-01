@@ -15,7 +15,6 @@ pub async fn read(pool: &Pool, msg: ReadURL) -> Result<ShortURL, UserError> {
   let statement = "
     SELECT
       id,
-      user_id,
       slug,
       url,
       visits,
@@ -25,7 +24,7 @@ pub async fn read(pool: &Pool, msg: ReadURL) -> Result<ShortURL, UserError> {
     WHERE slug = $1
   ";
 
-  let mut client = pool.get().await?;
+  let client = pool.get().await?;
   let prepared_statement = client.prepare(statement).await?;
 
   debug!("Looking for {}", msg.slug);
@@ -34,12 +33,11 @@ pub async fn read(pool: &Pool, msg: ReadURL) -> Result<ShortURL, UserError> {
 
   let url = ShortURL {
     id: row.try_get::<_, Uuid>(0)?,
-    user_id: row.try_get::<_, Option<Uuid>>(1)?,
-    slug: row.try_get::<_, String>(2)?,
-    url: row.try_get::<_, String>(3)?,
-    visits: row.try_get::<_, i64>(4)?,
-    created_at: row.try_get::<_, NaiveDateTime>(5)?,
-    updated_at: row.try_get::<_, NaiveDateTime>(6)?,
+    slug: row.try_get::<_, String>(1)?,
+    url: row.try_get::<_, String>(2)?,
+    visits: row.try_get::<_, i64>(3)?,
+    created_at: row.try_get::<_, NaiveDateTime>(4)?,
+    updated_at: row.try_get::<_, NaiveDateTime>(5)?,
   };
 
   Ok(url)

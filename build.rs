@@ -28,12 +28,16 @@ fn run_npm_command(cmd: &str, args: &Vec<&str>, error: &str) {
     let mut arguments = vec!["/C", command.to_str().unwrap()];
     arguments.extend(args);
 
-    Command::new("cmd").args(arguments).output().expect(error)
+    Command::new("cmd").env("NODE_ENV", "production").args(arguments).output().expect(error)
   } else {
-    let mut arguments = vec!["-c", command.to_str().unwrap()];
+    let mut arguments = vec![command.to_str().unwrap()];
     arguments.extend(args);
 
-    Command::new("sh").args(arguments).output().expect(error)
+    let arg_str = arguments.join(" ");
+
+    arguments = vec!["-c", &arg_str];
+
+    Command::new("sh").env("NODE_ENV", "production").args(arguments).output().expect(error)
   };
 
   println!("{}", String::from_utf8(output.stdout).unwrap());
@@ -45,7 +49,7 @@ fn main() {
 
   run_npm_command(
     "postcss",
-    &vec!["style/style.css", ">", "public/res/style.min.css"],
+    &vec![root.join("style").join("style.css").to_str().unwrap(), "-o", root.join("public").join("res").join("style.min.css").to_str().unwrap()],
     "Failed to build minified CSS",
   );
 

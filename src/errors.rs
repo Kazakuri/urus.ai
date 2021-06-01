@@ -22,25 +22,6 @@ pub enum UserError {
   NotFound,
 
   // ==================================
-  // Session Errors
-  // ==================================
-  #[error("Invalid login.")]
-  LoginError,
-
-  #[error("Email not verified")]
-  EmailNotVerified,
-
-  // ==================================
-  // User Create Errors
-  // ==================================
-  #[error("Password too short. Passwords should contain at least 8 characters.")]
-  PasswordTooShort,
-
-  #[error("Password not complex enough. Passwords should contain at least one lowercase letter, one uppercase letter, one number, and one symbol."
-  )]
-  PasswordNotComplex,
-
-  // ==================================
   #[error("Invalid characters in URL.")]
   InvalidCharactersInURL,
 
@@ -85,11 +66,11 @@ impl From<std::io::Error> for UserError {
   }
 }
 
-impl From<deadpool::PoolError<tokio_postgres::error::Error>> for UserError {
-  fn from(err: deadpool::PoolError<tokio_postgres::error::Error>) -> UserError {
+impl From<deadpool::managed::PoolError<tokio_postgres::error::Error>> for UserError {
+  fn from(err: deadpool::managed::PoolError<tokio_postgres::error::Error>) -> UserError {
     match err {
-      deadpool::PoolError::Timeout(_) => UserError::InternalError,
-      deadpool::PoolError::Backend(e) => e.into(),
+      deadpool::managed::PoolError::Backend(e) => e.into(),
+      _ => UserError::InternalError,
     }
   }
 }
@@ -122,7 +103,10 @@ impl From<tokio_postgres::error::Error> for UserError {
         debug!("{:?}", err);
         UserError::InvalidValue { field: constraint }
       }
-      None => UserError::InternalError,
+      None => {
+        debug!("{:?}", err);
+        UserError::InternalError
+      },
     }
   }
 }

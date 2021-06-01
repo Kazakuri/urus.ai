@@ -1,4 +1,3 @@
-use actix_identity::Identity;
 use actix_web::web::Form;
 use actix_web::{web::Data, HttpResponse};
 use askama::Template;
@@ -10,16 +9,10 @@ use crate::templates::Index;
 use crate::State;
 use urusai_lib::models::message::{Message, MessageType};
 
-pub async fn create(id: Identity, mut form: Form<CreateURL>, state: Data<State>) -> Result<HttpResponse, UserError> {
+pub async fn create(form: Form<CreateURL>, state: Data<State>) -> Result<HttpResponse, UserError> {
   let db = state.db.clone();
 
-  let user = crate::utils::load_user(id.identity(), &db).await;
-
   let domain = env::var("DOMAIN").expect("DOMAIN must be set");
-
-  if let Some(id) = id.identity() {
-    form.user_id = Some(id);
-  }
 
   let url = crate::db::url::create(&db, form.into_inner()).await;
 
@@ -27,7 +20,6 @@ pub async fn create(id: Identity, mut form: Form<CreateURL>, state: Data<State>)
     Ok(url) => Ok(
       HttpResponse::Ok().content_type("text/html").body(
         Index {
-          user: &user,
           message: None,
           url: Some(&format!("https://{}/{}", domain, url)),
         }
@@ -38,7 +30,6 @@ pub async fn create(id: Identity, mut form: Form<CreateURL>, state: Data<State>)
     Err(e) => Ok(
       HttpResponse::Ok().content_type("text/html").body(
         Index {
-          user: &user,
           message: Some(&Message {
             message_type: MessageType::Error,
             message: &e.to_string(),
